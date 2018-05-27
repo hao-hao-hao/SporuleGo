@@ -2,6 +2,8 @@ package common
 
 import (
 	"reflect"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 //CheckNil checks if the item are empty, it will return true if it is not nil
@@ -29,4 +31,15 @@ func CheckNil(items ...interface{}) (result bool) {
 		}
 	}
 	return result
+}
+
+//EncryptPassword Hashes the passwords
+func EncryptPassword(password string) (string, error) {
+	newPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	return string(newPassword), err
+}
+
+//VerifyPassword verify the password and stored encrypted password
+func VerifyPassword(password, encryptedPassword string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(password)) == nil
 }
