@@ -28,10 +28,11 @@ type User struct {
 func NewUser(email, password, name string, roles []Role) (user *User, err error) {
 	//check if at least email, password, string and role is not nil
 	isValid := common.CheckNil(email, password, name, roles)
+	encryptedPassword, _ := common.EncryptPassword(password)
 	if isValid {
 		user = &User{
 			Email:       email,
-			Password:    password,
+			Password:    encryptedPassword,
 			Name:        name,
 			FailedLogin: 0,
 			IsDisabled:  false,
@@ -76,12 +77,13 @@ func GetUsers(query bson.M) (*[]User, error) {
 	return &users, err
 }
 
-//GetUserByEmail returns user with the email address
+//GetUserByEmail returns user by giving the email address
 func GetUserByEmail(email string) (*User, error) {
 	user, err := GetUser(bson.M{"email": email})
 	return user, err
 }
 
+//GetUserByID returns user by giving the user ID
 func GetUserByID(ID string) (*User, error) {
 	user, err := GetUser(bson.M{"ID": ID})
 	return user, err

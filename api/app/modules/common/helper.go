@@ -33,7 +33,7 @@ func CheckNil(items ...interface{}) (result bool) {
 	return result
 }
 
-//EncryptPassword Hashes the passwords
+//EncryptPassword Hashes the password
 func EncryptPassword(password string) (string, error) {
 	newPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	return string(newPassword), err
