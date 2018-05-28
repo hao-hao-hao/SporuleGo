@@ -10,16 +10,22 @@ import (
 )
 
 func main() {
-	//initiate Global Variables
-	common.InitiateGlobalVariables()
 
-	//Initiate the Database
+	//initiate application
+	common.InitiateGlobalVariables()
 	common.InitiateDatabase()
+
 	//set router to gin default router with logger
 	router := gin.Default()
 
-	//Initiate the routes
-	api.RegisterAPIRoute(router)
+	//Register the routes
+	api.RegisterAdminRoute(router)
+	api.RegisterAuthRoute(router)
+
+	//test routes
+	if common.Config.ENV == "dev" {
+		api.RegisterTestRoute(router)
+	}
 
 	//start the application
 	router.Run()

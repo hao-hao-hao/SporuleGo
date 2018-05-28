@@ -18,11 +18,11 @@ func AddUser(c *gin.Context) {
 	if err == nil {
 		err = errors.New("No Error")
 	}
-	common.HTTPResponse200(c, &gin.H{"user": user}, err.Error())
+	common.HTTPResponse200(c, &gin.H{"user": user}, common.GetError(err))
 }
 
 //GetUsers returns all the users
 func GetUsers(c *gin.Context) {
 	users, err := models.GetUsers(nil)
-	common.HTTPResponse200(c, &gin.H{"users": users}, err.Error())
+	common.HTTPResponse200(c, &gin.H{"users": users}, common.GetError(err))
 }

@@ -25,7 +25,7 @@ func InitiateDatabase() {
 		Database: db,
 		Username: "sporule",
 		Password: "1q2w3e4r",
-		IsDrop:   true,
+		IsDrop:   false,
 	}
 
 	var err error
@@ -92,4 +92,9 @@ func Delete(collection string, selector interface{}, isAll bool) error {
 	}
 	err = c.Remove(selector)
 	return err
+}
+
+//DropDatabase drop the database
+func DropDatabase() {
+	session.DB(db).DropDatabase()
 }

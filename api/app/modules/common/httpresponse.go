@@ -24,7 +24,7 @@ func HTTPResponse(c *gin.Context, code int, results *gin.H, err string) {
 	if CheckNil(err) {
 		body["error"] = err
 	}
-	if CheckNil(results) {
+	if CheckNil(*results) {
 		body["results"] = *results
 	}
 	c.JSON(code, body)

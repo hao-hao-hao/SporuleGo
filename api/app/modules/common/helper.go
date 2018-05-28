@@ -20,7 +20,8 @@ func CheckNil(items ...interface{}) (result bool) {
 			result = value.Len() > 0
 		case reflect.Ptr, reflect.Interface:
 			//recursive call itself to check the real value
-			result = CheckNil(value.Elem())
+			valueElem := value.Elem()
+			result = CheckNil(valueElem)
 		default:
 			result = false
 		}
@@ -42,4 +43,13 @@ func EncryptPassword(password string) (string, error) {
 //VerifyPassword verify the password and stored encrypted password
 func VerifyPassword(password, encryptedPassword string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(password)) == nil
+}
+
+//GetError returns error message if error is not nil
+func GetError(err error) string {
+	if err == nil {
+		return ""
+	} else {
+		return err.Error()
+	}
 }
