@@ -4,6 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -42,4 +44,19 @@ func keyfunc(token *jwt.Token) (interface{}, error) {
 		return nil, errors.New("Invalid signing algorithm")
 	}
 	return []byte(Config.JWTKey), nil
+}
+
+//SetIDInHeader sets the user id(can be email) in the header
+func SetIDInHeader(c *gin.Context, id string) {
+	c.Set(Enums.IDInHeader, id)
+}
+
+//GetIDInHeader gets the user id(can be email) in the header, it will return 401 if the id is empty
+func GetIDInHeader(c *gin.Context) string {
+	id, _ := c.Get(Enums.IDInHeader)
+	if !CheckNil(id) {
+		//return 401 if id is not found to be defensive
+		HTTPResponse401(c)
+	}
+	return id.(string)
 }

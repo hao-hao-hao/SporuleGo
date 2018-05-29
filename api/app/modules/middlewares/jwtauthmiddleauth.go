@@ -13,24 +13,29 @@ func JWTAuthMiddleware(c *gin.Context) {
 	//need to add role authroisation
 
 	//before request
-	authHeader := c.Request.Header.Get(common.Config.AuthHeader)
-	if common.CheckNil(authHeader) {
-		authToken := strings.SplitN(authHeader, " ", 2)[1]
-		email, _ := common.VerifyToken(authToken)
-		if common.CheckNil(email) {
-			user, _ := models.GetUserByEmail(email)
-			if common.CheckNil(user) {
-				c.Set("email", email)
-			} else {
-				common.HTTPResponse401(c)
-			}
-
-		} else {
-			common.HTTPResponse401(c)
-		}
-	} else {
+	//Locate Authorization Header
+	authHeader := c.Request.Header.Get("Authorization")
+	if !common.CheckNil(authHeader) {
 		common.HTTPResponse401(c)
 	}
+	//Check if it is bearer token
+	authString := strings.SplitN(authHeader, " ", 2)
+	if strings.ToLower(authString[0]) != "bearer" {
+		common.HTTPResponse401(c)
+	}
+	//Check if the token is valid
+	authToken := authString[1]
+	email, _ := common.VerifyToken(authToken)
+	if !common.CheckNil(email) {
+		common.HTTPResponse401(c)
+	}
+	//Check if the user is a valid user
+	user, _ := models.GetUserByEmail(email)
+	if !common.CheckNil(*user) {
+		common.HTTPResponse401(c)
+	}
+	//attach email address in the header
+	common.SetIDInHeader(c, email)
 
 	c.Next()
 

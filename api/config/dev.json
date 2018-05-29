@@ -2,6 +2,5 @@
     "ENV":"dev",
     "JWTKey":"DevKey1212!sporule",
     "JWTLife":15000,
-    "JWTIssuer":"Sporule",
-    "AuthHeader":"Sporule"
+    "JWTIssuer":"Sporule"
 }

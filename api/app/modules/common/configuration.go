@@ -8,8 +8,8 @@ import (
 
 //Configuration provides the configuration model
 type Configuration struct {
-	JWTKey, JWTIssuer, AuthHeader, ENV string
-	JWTLife                            time.Duration
+	JWTKey, JWTIssuer, ENV string
+	JWTLife                time.Duration
 }
 
 //LoadConfiguration loads configuration from json file

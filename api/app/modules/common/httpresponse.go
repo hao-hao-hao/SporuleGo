@@ -33,16 +33,16 @@ func HTTPResponse(c *gin.Context, code int, results *gin.H, err string) {
 //HTTPResponse404 returns 404 error
 func HTTPResponse404(c *gin.Context) {
 	//HTTPResponse(c, HTTPStatus.NotFound, nil, "Page Not Found")
-	c.AbortWithStatus(HTTPStatus.NotFound)
+	c.AbortWithStatus(Enums.HTTPStatus.NotFound)
 }
 
 //HTTPResponse401 returns 401 error
 func HTTPResponse401(c *gin.Context) {
 	//HTTPResponse(c, HTTPStatus.Unauthorized, nil, "You don't have necessary permission")
-	c.AbortWithStatus(HTTPStatus.Unauthorized)
+	c.AbortWithStatus(Enums.HTTPStatus.Unauthorized)
 }
 
 //HTTPResponse200 return 200 OK with results
 func HTTPResponse200(c *gin.Context, results *gin.H, err string) {
-	HTTPResponse(c, HTTPStatus.OK, results, err)
+	HTTPResponse(c, Enums.HTTPStatus.OK, results, err)
 }
