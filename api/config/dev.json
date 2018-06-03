@@ -1,6 +1,6 @@
 {
     "ENV":"dev",
     "JWTKey":"DevKey1212!sporule",
-    "JWTLife":15000,
+    "JWTLife":1000,
     "JWTIssuer":"Sporule"
 }

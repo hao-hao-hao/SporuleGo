@@ -19,7 +19,7 @@ type User struct {
 	Name        string        `bson:"name"`
 	LastLogin   time.Time     `bson:"lastLogin"`
 	FailedLogin uint          `bson:"failedLogin"`
-	ResetToken  string        `bson:"resetToken"`
+	TokenSalt   string        `bson:"resetToken"`
 	IsDisabled  bool          `bson:"isDisabled"`
 	Roles       []Role        `bson:"roles"`
 }
@@ -37,47 +37,57 @@ func (user *User) NewUser(email, password, name string, roles []Role) (err error
 		user.FailedLogin = 0
 		user.IsDisabled = false
 		user.Roles = roles
+		user.TokenSalt = common.GenerateRandomString()
 	} else {
-		err = errors.New("Please ensure you have provided at least Email, Password and Name")
+		err = errors.New(common.Enums.ErrorMessages.LackOfRegInfo)
 	}
 	return err
 }
 
 //Register adds User to database if it is not exist already. It will return an error if the user it is in the database
-func (user *User) Register() (err error) {
-	if common.CheckNil(user.Email, user.Password, user.Name) {
-		tempUser, _ := GetUserByEmail(user.Email)
-		if !common.CheckNil(tempUser.Email) {
-			//add user if the email is not in database
-			err = user.NewUser(user.Email, user.Password, user.Name, nil)
-			if err == nil {
-				err = common.Create(collection, user)
-			}
-		} else {
-			err = errors.New("Your Email Address is already exists")
-		}
-	} else {
-		err = errors.New("Please ensure you have provided at least Email, Password and Name")
+func (user *User) Register() error {
+	if !common.CheckNil(user.Email, user.Password, user.Name) {
+		return errors.New(common.Enums.ErrorMessages.LackOfRegInfo)
 	}
-	return err
+	tempUser, _ := GetUserByEmail(user.Email)
+	if common.CheckNil(tempUser.Email) {
+		return errors.New(common.Enums.ErrorMessages.UserExist)
+	}
+	if user.NewUser(user.Email, user.Password, user.Name, nil) != nil {
+		return errors.New(common.Enums.ErrorMessages.SystemError)
+	}
+	if common.Create(collection, user) != nil {
+		return errors.New(common.Enums.ErrorMessages.SystemError)
+	}
+	return nil
 }
 
 //Verify verifies the user to see if it is valid
 func (user *User) Verify() (err error) {
-	if common.CheckNil(user.Email, user.Password) {
-		dbUser, err := GetUserByEmail(user.Email)
-		if err == nil {
-			if common.VerifyPassword(user.Password, dbUser.Password) {
-				return nil
-			} else {
-				return errors.New("User information does not match/can't be found")
-			}
-		} else {
-			return errors.New("User information does not match/can't be found")
-		}
-	} else {
-		return errors.New("User information does not match/can't be found")
+	if !common.CheckNil(user.Email, user.Password) {
+		return errors.New(common.Enums.ErrorMessages.AuthFailed)
 	}
+	dbUser, err := GetUserByEmail(user.Email)
+	if err != nil {
+		return errors.New(common.Enums.ErrorMessages.AuthFailed)
+	}
+	if !common.VerifyPassword(user.Password, dbUser.Password) {
+		return errors.New(common.Enums.ErrorMessages.AuthFailed)
+	}
+	user.TokenSalt = dbUser.TokenSalt
+	return nil
+}
+
+//UpdateTokenSalt updates the token salt to invalid the user id
+func (user *User) UpdateTokenSalt() error {
+	user.TokenSalt = common.GenerateRandomString()
+	return user.UpdateUser()
+}
+
+//UpdateUser updates the user to the database
+func (user *User) UpdateUser() error {
+	err := common.Update(collection, bson.M{"email": user.Email}, user, false)
+	return err
 }
 
 //GetUser returns a user according to the filter query

@@ -1,7 +1,9 @@
 package common
 
 import (
+	"math/rand"
 	"reflect"
+	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -14,6 +16,7 @@ func CheckNil(items ...interface{}) (result bool) {
 		//return false if the value is not valid
 		if !value.IsValid() {
 			result = false
+			return result
 		}
 		switch value.Kind() {
 		case reflect.Slice, reflect.String, reflect.Map, reflect.Array:
@@ -22,6 +25,8 @@ func CheckNil(items ...interface{}) (result bool) {
 			//recursive call itself to check the real value
 			valueElem := value.Elem()
 			result = CheckNil(valueElem)
+		case reflect.Struct:
+			//return true by default, struct is always not nil
 		default:
 			result = false
 		}
@@ -52,4 +57,9 @@ func GetError(err error) string {
 	} else {
 		return err.Error()
 	}
+}
+
+//GenerateRandomString provides random strings
+func GenerateRandomString() string {
+	return strconv.Itoa(rand.Intn(88888))
 }

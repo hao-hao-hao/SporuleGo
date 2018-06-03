@@ -12,13 +12,14 @@ import (
 //AuthenticationClaims is the claims struct for jwt token
 type AuthenticationClaims struct {
 	Email string `json:"email"`
+	Salt  string `json:"salt"`
 	jwt.StandardClaims
 }
 
 //GenerateJWT generates JSON WEB TOKEN for authentication by using email address
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(email string, salt string) (string, error) {
 	claims := AuthenticationClaims{
-		email,
+		email, salt,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * Config.JWTLife).Unix(),
 			Issuer:    Config.JWTIssuer,
@@ -29,13 +30,13 @@ func GenerateJWT(email string) (string, error) {
 }
 
 //VerifyToken verify and parse the token to email address
-func VerifyToken(tokenString string) (string, error) {
+func VerifyToken(tokenString string) (string, string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &AuthenticationClaims{}, keyfunc)
 	if err == nil {
 		claims := token.Claims.(*AuthenticationClaims)
-		return claims.Email, err
+		return claims.Email, claims.Salt, err
 	}
-	return "", err
+	return "", "", err
 }
 
 //keyfunc is the function that validates the sign method and then return the JWT Key
@@ -48,12 +49,12 @@ func keyfunc(token *jwt.Token) (interface{}, error) {
 
 //SetIDInHeader sets the user id(can be email) in the header
 func SetIDInHeader(c *gin.Context, id string) {
-	c.Set(Enums.IDInHeader, id)
+	c.Set(Enums.Others.IDInHeader, id)
 }
 
 //GetIDInHeader gets the user id(can be email) in the header, it will return 401 if the id is empty
 func GetIDInHeader(c *gin.Context) string {
-	id, _ := c.Get(Enums.IDInHeader)
+	id, _ := c.Get(Enums.Others.IDInHeader)
 	if !CheckNil(id) {
 		//return 401 if id is not found to be defensive
 		HTTPResponse401(c)

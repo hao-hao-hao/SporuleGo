@@ -25,13 +25,13 @@ func JWTAuthMiddleware(c *gin.Context) {
 	}
 	//Check if the token is valid
 	authToken := authString[1]
-	email, _ := common.VerifyToken(authToken)
-	if !common.CheckNil(email) {
+	email, salt, _ := common.VerifyToken(authToken)
+	if !common.CheckNil(email, salt) {
 		common.HTTPResponse401(c)
 	}
 	//Check if the user is a valid user
-	user, _ := models.GetUserByEmail(email)
-	if !common.CheckNil(*user) {
+	user, err := models.GetUserByEmail(email)
+	if common.CheckNil(err) || user.TokenSalt != salt {
 		common.HTTPResponse401(c)
 	}
 	//attach email address in the header

@@ -6,7 +6,13 @@ func InitiateGlobalVariables() {
 	Config.LoadConfiguration("dev.json")
 
 	//load HTTPStatus
-	Enums.HTTPStatus.LoadHTTPStatus()
+	Enums.LoadHTTPStatus()
+
+	//load error messages
+	Enums.LoadErrorMessageEnums()
+
+	//load role enums
+	Enums.LoadRoleEnums()
 
 	//load other enums
 	Enums.LoadOtherEnums()
@@ -14,7 +20,23 @@ func InitiateGlobalVariables() {
 
 //LoadOtherEnums assign values to enums
 func (enums *Enum) LoadOtherEnums() {
-	enums.IDInHeader = "email"
+	enums.Others.IDInHeader = "email"
+
+}
+
+//LoadErrorMessageEnums assign values to enums.ErrorMessages
+func (enums *Enum) LoadErrorMessageEnums() {
+	enums.ErrorMessages.AuthFailed = "Authentication failed, please check your credentials."
+	enums.ErrorMessages.PageNotFound = "Page Not found."
+	enums.ErrorMessages.SystemError = "System Error, please try later or contact the Administrator."
+	enums.ErrorMessages.LackOfRegInfo = "Registration failed, please ensure you have provided at least Email, Password and Name."
+	enums.ErrorMessages.UserExist = "User already exist."
+}
+
+//LoadRoleEnums loads a list of predefined roles
+func (enums *Enum) LoadRoleEnums() {
+	enums.Roles.Admin = "Admin"
+	enums.Roles.Member = "Member"
 }
 
 //Structs
@@ -22,9 +44,28 @@ func (enums *Enum) LoadOtherEnums() {
 //Enum are the collection of enums :-)
 type Enum struct {
 	//HeaderID is where the user id stored in the context
-	IDInHeader string
+	Others Other
 	//HTTPStatus provides a list of http status code
 	HTTPStatus HTTPStatusStruct
+	//ErrorMessage provides a list of error messages
+	ErrorMessages ErrorMessage
+	//Roles provides a list of roles
+	Roles Role
+}
+
+//ErrorMessage is the collection of error messages
+type ErrorMessage struct {
+	AuthFailed, PageNotFound, SystemError, LackOfRegInfo, UserExist string
+}
+
+//Role is the collection of roles
+type Role struct {
+	Admin, Member string
+}
+
+//Other is the struct of uncategorise enums
+type Other struct {
+	IDInHeader string
 }
 
 //*Normal Global Variables*//

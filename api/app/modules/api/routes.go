@@ -16,7 +16,7 @@ func RegisterAdminRoute(router *gin.Engine) {
 	//set route permission
 	apiRouter.Use(middleware.JWTAuthMiddleware)
 
-	apiRouter.GET("/", apicontrollers.GetUsers)
+	apiRouter.GET("/user", apicontrollers.GetUsers)
 }
 
 //RegisterAuthRoute provides authentication functions such as generate token
@@ -24,11 +24,16 @@ func RegisterAuthRoute(router *gin.Engine) {
 	authRouter := router.Group("/auth/")
 	authRouter.POST("/user", apicontrollers.AddUser)
 	authRouter.POST("/", apicontrollers.GenerateToken)
+
+	//below are the auth router that requires token authentication
+	requiredTokenRouter := authRouter.Group("/")
+	requiredTokenRouter.Use(middleware.JWTAuthMiddleware)
+	requiredTokenRouter.GET("/", apicontrollers.RefreshToken)
 }
 
 //RegisterTestRoute is for testing only
 func RegisterTestRoute(router *gin.Engine) {
 	testRouter := router.Group("/test/")
-	testRouter.GET("/", apicontrollers.GetUsers)
+	testRouter.GET("/getusers", apicontrollers.GetUsers)
 	testRouter.GET("/drop", apicontrollers.DropDB)
 }

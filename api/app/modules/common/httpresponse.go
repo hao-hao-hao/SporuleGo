@@ -10,12 +10,12 @@ type HTTPStatusStruct struct {
 }
 
 //LoadHTTPStatus sets the basic HTTPStatus
-func (status *HTTPStatusStruct) LoadHTTPStatus() {
-	status.OK = 200
-	status.MovedPermanently = 301
-	status.BadRequest = 400
-	status.Unauthorized = 401
-	status.NotFound = 404
+func (enums *Enum) LoadHTTPStatus() {
+	enums.HTTPStatus.OK = 200
+	enums.HTTPStatus.MovedPermanently = 301
+	enums.HTTPStatus.BadRequest = 400
+	enums.HTTPStatus.Unauthorized = 401
+	enums.HTTPStatus.NotFound = 404
 }
 
 //HTTPResponse is a generic response function which sets the structure of return
@@ -24,7 +24,7 @@ func HTTPResponse(c *gin.Context, code int, results *gin.H, err string) {
 	if CheckNil(err) {
 		body["error"] = err
 	}
-	if CheckNil(*results) {
+	if CheckNil(results) {
 		body["results"] = *results
 	}
 	c.JSON(code, body)
