@@ -1,3 +1,3 @@
 # Sporule
 
-Need to test the Bearer Auth in header
+Need to test the role base authentication
