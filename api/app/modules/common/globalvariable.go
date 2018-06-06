@@ -31,6 +31,7 @@ func (enums *Enum) LoadErrorMessageEnums() {
 	enums.ErrorMessages.SystemError = "System Error, please try later or contact the Administrator."
 	enums.ErrorMessages.LackOfRegInfo = "Registration failed, please ensure you have provided at least Email, Password and Name."
 	enums.ErrorMessages.UserExist = "User already exist."
+	enums.ErrorMessages.LackOfNodeInfo = "Fail to add a note, please ensure you have provided necessary data"
 }
 
 //LoadRoleEnums loads a list of predefined roles
@@ -55,7 +56,7 @@ type Enum struct {
 
 //ErrorMessage is the collection of error messages
 type ErrorMessage struct {
-	AuthFailed, PageNotFound, SystemError, LackOfRegInfo, UserExist string
+	AuthFailed, PageNotFound, SystemError, LackOfRegInfo, UserExist, LackOfNodeInfo string
 }
 
 //Role is the collection of roles

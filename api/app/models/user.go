@@ -8,8 +8,8 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//UserCollection is the collection name for Model User in mongo db
-const collection = "user"
+//userCollection is the collection name for Model User in mongo db
+const userCollection = "user"
 
 //User is user account which will include authentications
 type User struct {
@@ -24,8 +24,9 @@ type User struct {
 	Roles       []Role        `bson:"roles"`
 }
 
-//NewUser Constructor, It will inject mongodb ID and hash password automatically
-func (user *User) NewUser(email, password, name string, roles []Role) (err error) {
+//NewUser Constructor, It will create a new user object, and inject mongodb ID and hash password automatically
+func NewUser(email, password, name string, roles []Role) (user *User, err error) {
+	user = &User{}
 	//check if at least email, password, string and role is not nil
 	isValid := common.CheckNil(email, password, name)
 	encryptedPassword, _ := common.EncryptPassword(password)
@@ -41,7 +42,7 @@ func (user *User) NewUser(email, password, name string, roles []Role) (err error
 	} else {
 		err = errors.New(common.Enums.ErrorMessages.LackOfRegInfo)
 	}
-	return err
+	return user, err
 }
 
 //Register adds User to database if it is not exist already. It will return an error if the user it is in the database
@@ -53,10 +54,7 @@ func (user *User) Register() error {
 	if common.CheckNil(tempUser.Email) {
 		return errors.New(common.Enums.ErrorMessages.UserExist)
 	}
-	if user.NewUser(user.Email, user.Password, user.Name, nil) != nil {
-		return errors.New(common.Enums.ErrorMessages.SystemError)
-	}
-	if common.Create(collection, user) != nil {
+	if common.Create(userCollection, user) != nil {
 		return errors.New(common.Enums.ErrorMessages.SystemError)
 	}
 	return nil
@@ -78,22 +76,22 @@ func (user *User) Verify() (err error) {
 	return nil
 }
 
-//UpdateTokenSalt updates the token salt to invalid the user id
+//UpdateTokenSalt updates the token salt of the user to invalid the user token
 func (user *User) UpdateTokenSalt() error {
 	user.TokenSalt = common.GenerateRandomString()
-	return user.UpdateUser()
+	return user.Update()
 }
 
-//UpdateUser updates the user to the database
-func (user *User) UpdateUser() error {
-	err := common.Update(collection, bson.M{"email": user.Email}, user, false)
+//Update updates the user to the database
+func (user *User) Update() error {
+	err := common.Update(userCollection, bson.M{"email": user.Email}, user, false)
 	return err
 }
 
 //GetUser returns a user according to the filter query
 func GetUser(query bson.M) (*User, error) {
 	var user User
-	s, c := common.Collection(collection)
+	s, c := common.Collection(userCollection)
 	defer s.Close()
 	err := c.Find(query).One(&user)
 	return &user, err
@@ -102,7 +100,7 @@ func GetUser(query bson.M) (*User, error) {
 //GetUsers returns an user slice according to the filter
 func GetUsers(query bson.M) (*[]User, error) {
 	var users []User
-	s, c := common.Collection(collection)
+	s, c := common.Collection(userCollection)
 	defer s.Close()
 	err := c.Find(query).All(&users)
 	return &users, err

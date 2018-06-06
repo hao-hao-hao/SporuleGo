@@ -10,13 +10,20 @@ import (
 
 //AddUser provides the ability to add new user and return the added user with any error
 func AddUser(c *gin.Context) {
-	var user models.User
-	err := c.BindJSON(&user)
-	if err == nil {
-		err = user.Register()
+	var tempUser models.User
+	err := c.BindJSON(&tempUser)
+	if err != nil {
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 	}
+	user, err := models.NewUser(tempUser.Email, tempUser.Password, tempUser.Name, tempUser.Roles)
+	if err != nil {
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
+	}
+	err = user.Register()
 	if err == nil {
 		err = errors.New("No Error")
+	} else {
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 	}
 	common.HTTPResponse200(c, &gin.H{"user": user}, common.GetError(err))
 }

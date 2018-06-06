@@ -10,8 +10,6 @@ import (
 
 //JWTAuthMiddleware is the middleware that authenticates the requests
 func JWTAuthMiddleware(c *gin.Context) {
-	//need to add role authroisation
-
 	//before request
 	//Locate Authorization Header
 	authHeader := c.Request.Header.Get("Authorization")
@@ -38,6 +36,13 @@ func JWTAuthMiddleware(c *gin.Context) {
 	common.SetIDInHeader(c, email)
 
 	c.Next()
-
 	//after request
+}
+
+//RoleAuthMiddleware provides the ability for role management
+func RoleAuthMiddleware(c *gin.Context) {
+	abc := c.HandlerName()
+	c.Handler()
+	println(abc)
+	c.Next()
 }

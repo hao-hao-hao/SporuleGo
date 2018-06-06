@@ -34,6 +34,8 @@ func RegisterAuthRoute(router *gin.Engine) {
 //RegisterTestRoute is for testing only
 func RegisterTestRoute(router *gin.Engine) {
 	testRouter := router.Group("/test/")
+	testRouter.Use(middleware.RoleAuthMiddleware)
 	testRouter.GET("/getusers", apicontrollers.GetUsers)
+	testRouter.GET("/bbc", apicontrollers.GetUsers)
 	testRouter.GET("/drop", apicontrollers.DropDB)
 }
