@@ -54,9 +54,8 @@ func VerifyPassword(password, encryptedPassword string) bool {
 func GetError(err error) string {
 	if err == nil {
 		return ""
-	} else {
-		return err.Error()
 	}
+	return err.Error()
 }
 
 //GenerateRandomString provides random strings

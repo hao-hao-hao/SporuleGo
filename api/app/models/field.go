@@ -1,12 +1,66 @@
 package models
 
+import (
+	"errors"
+	"sporule/api/app/modules/common"
+
+	"gopkg.in/mgo.v2/bson"
+)
+
+//fieldCollection is the collection name for Model Node in mongo db
+const fieldCollection = "field"
+
 //Field is for the purpose of front end rendering. Such as dropdown or textbox or input string etc....
 type Field struct {
-	Name string    `bson:"name"`
-	Type FieldType `bson:"type"`
+	ID        bson.ObjectId `bson:"_id"`
+	Name      string        `bson:"name"`
+	FieldType string        `bson:"type"`
 }
 
-//FieldType will contain dropdown, input string etc... It is a reference for type field.
-type FieldType struct {
-	Name string `bson:"fieldType"`
+//NewField is the constructor for Field
+func NewField(name, fieldType string) (*Field, error) {
+	if !common.CheckNil(name, fieldType) {
+		return nil, errors.New(common.Enums.ErrorMessages.LackOfInfo)
+	}
+	field := &Field{}
+	field.Name = name
+	field.FieldType = fieldType
+	return field, nil
+}
+
+//Insert inserts the field to the database
+func (field *Field) Insert() error {
+	if !common.CheckNil(field.Name, field.FieldType) {
+		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
+	}
+	if common.Create(fieldCollection, field) != nil {
+		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
+	}
+	return nil
+}
+
+//Update updates the Field to the database
+func (field *Field) Update() error {
+	err := common.Update(fieldCollection, bson.M{"_id": field.ID}, field, false)
+	return err
+}
+
+//DeleteField deletes the selected field by Id
+func DeleteField(id bson.ObjectId) error {
+	return common.Delete(fieldCollection, bson.M{"_id": id}, true)
+}
+
+//GetField returns a field according to the filter query
+func GetField(query bson.M) (*Field, error) {
+	var field Field
+	s, c := common.Collection(fieldCollection)
+	defer s.Close()
+	err := c.Find(query).One(&field)
+	return &field, err
+}
+
+//GetFieldByID returns field by id
+func GetFieldByID(id bson.ObjectId) (*Field, error) {
+	field, err := GetField(bson.M{"_id": id})
+	return field, err
 }

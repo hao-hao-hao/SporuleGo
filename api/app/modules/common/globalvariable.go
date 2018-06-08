@@ -4,75 +4,83 @@ package common
 func InitiateGlobalVariables() {
 	//load configuration
 	Config.LoadConfiguration("dev.json")
-
-	//load HTTPStatus
-	Enums.LoadHTTPStatus()
-
-	//load error messages
-	Enums.LoadErrorMessageEnums()
-
-	//load role enums
-	Enums.LoadRoleEnums()
-
-	//load other enums
-	Enums.LoadOtherEnums()
+	Enums.loadHTTPStatus()
+	Enums.loadErrorMessageEnums()
+	Enums.loadRoleEnums()
+	Enums.loadFieldEnums()
+	Enums.loadOtherEnums()
 }
 
 //LoadOtherEnums assign values to enums
-func (enums *Enum) LoadOtherEnums() {
+func (enums *enum) loadOtherEnums() {
 	enums.Others.IDInHeader = "email"
 
 }
 
 //LoadErrorMessageEnums assign values to enums.ErrorMessages
-func (enums *Enum) LoadErrorMessageEnums() {
+func (enums *enum) loadErrorMessageEnums() {
 	enums.ErrorMessages.AuthFailed = "Authentication failed, please check your credentials."
 	enums.ErrorMessages.PageNotFound = "Page Not found."
 	enums.ErrorMessages.SystemError = "System Error, please try later or contact the Administrator."
 	enums.ErrorMessages.LackOfRegInfo = "Registration failed, please ensure you have provided at least Email, Password and Name."
 	enums.ErrorMessages.UserExist = "User already exist."
-	enums.ErrorMessages.LackOfNodeInfo = "Fail to add a note, please ensure you have provided necessary data"
+	enums.ErrorMessages.LackOfInfo = "Fail to add an item, please ensure you have provided necessary info"
+	enums.ErrorMessages.RecordExist = "Fail to add an item, the data is already exist"
 }
 
 //LoadRoleEnums loads a list of predefined roles
-func (enums *Enum) LoadRoleEnums() {
+func (enums *enum) loadRoleEnums() {
 	enums.Roles.Admin = "Admin"
 	enums.Roles.Member = "Member"
+}
+
+//LoadFieldEnums loads a list of fields
+func (enums *enum) loadFieldEnums() {
+	enums.Fields.Dropdown = "Dropdown"
+	enums.Fields.TextArea = "TextArea"
+	enums.Fields.TextField = "TextField"
 }
 
 //Structs
 
 //Enum are the collection of enums :-)
-type Enum struct {
+type enum struct {
 	//HeaderID is where the user id stored in the context
-	Others Other
+	Others other
 	//HTTPStatus provides a list of http status code
-	HTTPStatus HTTPStatusStruct
+	HTTPStatus hTTPStatusStruct
 	//ErrorMessage provides a list of error messages
-	ErrorMessages ErrorMessage
+	ErrorMessages errorMessage
 	//Roles provides a list of roles
-	Roles Role
+	Roles role
+	//Field Type
+	Fields field
 }
 
 //ErrorMessage is the collection of error messages
-type ErrorMessage struct {
-	AuthFailed, PageNotFound, SystemError, LackOfRegInfo, UserExist, LackOfNodeInfo string
+type errorMessage struct {
+	AuthFailed, PageNotFound, SystemError, LackOfRegInfo, UserExist, LackOfInfo, RecordExist string
 }
 
 //Role is the collection of roles
-type Role struct {
+type role struct {
 	Admin, Member string
 }
 
 //Other is the struct of uncategorise enums
-type Other struct {
+type other struct {
 	IDInHeader string
+}
+
+//Field is a type for field
+type field struct {
+	Dropdown, TextField, TextArea string
 }
 
 //*Normal Global Variables*//
 
 //Enums is a enum collection
-var Enums Enum
+var Enums enum
 
 //Config is a Global Config Object
 var Config Configuration

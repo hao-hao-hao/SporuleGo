@@ -21,10 +21,11 @@ type Node struct {
 
 //NewNode is the constructor foe Node
 func NewNode(name string, nodeTemplate NodeTemplate, permission []Role) (*Node, error) {
-	node := &Node{}
 	if !common.CheckNil(name, nodeTemplate, permission) {
-		return nil, errors.New(common.Enums.ErrorMessages.LackOfNodeInfo)
+		return nil, errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
+	node := &Node{}
+	node.ID = bson.NewObjectId()
 	node.Name = name
 	node.NodeTemplate = nodeTemplate
 	//initiate all the fields
@@ -37,6 +38,9 @@ func NewNode(name string, nodeTemplate NodeTemplate, permission []Role) (*Node, 
 
 //Insert inserts the node to the database
 func (node *Node) Insert() error {
+	if !common.CheckNil(node.Name, node.NodeTemplate, node.Permission) {
+		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
+	}
 	if common.Create(nodeCollection, node) != nil {
 		return errors.New(common.Enums.ErrorMessages.SystemError)
 	}
@@ -65,4 +69,9 @@ func GetNode(query bson.M) (*Node, error) {
 func GetNodeByID(id bson.ObjectId) (*Node, error) {
 	node, err := GetNode(bson.M{"id": id})
 	return node, err
+}
+
+//DeleteNode deletes the selected node by Id
+func DeleteNode(id bson.ObjectId) error {
+	return common.Delete(nodeCollection, bson.M{"id": id}, true)
 }

@@ -5,12 +5,12 @@ import (
 )
 
 //HTTPStatusStruct is the struct for http status
-type HTTPStatusStruct struct {
+type hTTPStatusStruct struct {
 	OK, MovedPermanently, BadRequest, Unauthorized, NotFound int
 }
 
 //LoadHTTPStatus sets the basic HTTPStatus
-func (enums *Enum) LoadHTTPStatus() {
+func (enums *enum) loadHTTPStatus() {
 	enums.HTTPStatus.OK = 200
 	enums.HTTPStatus.MovedPermanently = 301
 	enums.HTTPStatus.BadRequest = 400
