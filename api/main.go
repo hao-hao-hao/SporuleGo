@@ -19,13 +19,7 @@ func main() {
 	router := gin.Default()
 
 	//Register the routes
-	api.RegisterAdminRoute(router)
-	api.RegisterAuthRoute(router)
-
-	//test routes
-	if common.Config.ENV == "dev" {
-		api.RegisterTestRoute(router)
-	}
+	api.RegisterAPIRoutesV1(router)
 
 	//start the application
 	router.Run()

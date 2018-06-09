@@ -84,7 +84,7 @@ func (user *User) UpdateTokenSalt() error {
 
 //Update updates the user to the database
 func (user *User) Update() error {
-	err := common.Update(userCollection, bson.M{"email": user.Email}, user, false)
+	err := common.Update(userCollection, bson.M{"_id": user.ID}, user, false)
 	return err
 }
 
@@ -114,6 +114,6 @@ func GetUserByEmail(email string) (*User, error) {
 
 //GetUserByID returns user by giving the user ID
 func GetUserByID(ID string) (*User, error) {
-	user, err := GetUser(bson.M{"ID": ID})
+	user, err := GetUser(bson.M{"_id": ID})
 	return user, err
 }

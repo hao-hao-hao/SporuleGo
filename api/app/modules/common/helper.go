@@ -1,11 +1,13 @@
 package common
 
 import (
+	"errors"
 	"math/rand"
 	"reflect"
 	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/mgo.v2/bson"
 )
 
 //CheckNil checks if the item are empty, it will return true if it is not nil
@@ -61,4 +63,15 @@ func GetError(err error) string {
 //GenerateRandomString provides random strings
 func GenerateRandomString() string {
 	return strconv.Itoa(rand.Intn(88888))
+}
+
+//StringToObjectID returns MongoDB Object ID
+func StringToObjectID(id string) (objectID bson.ObjectId, err error) {
+	defer func() {
+		if errTemp := recover(); errTemp != nil {
+			err = errors.New(Enums.ErrorMessages.PageNotFound)
+		}
+	}()
+	objectID = bson.ObjectIdHex(id)
+	return objectID, err
 }

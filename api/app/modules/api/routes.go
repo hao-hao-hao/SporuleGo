@@ -4,38 +4,64 @@ package api
 
 import (
 	"sporule/api/app/modules/api/apicontrollers"
+	"sporule/api/app/modules/common"
 	"sporule/api/app/modules/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
-//RegisterAdminRoute register all routes for admin functions
-func RegisterAdminRoute(router *gin.Engine) {
+//RegisterAPIRoutesV1 registers all api routers
+func RegisterAPIRoutesV1(router *gin.Engine) {
+	r := router.Group("/api/v1")
+	registerAdminRoute(r)
+	registerAuthRoute(r)
+	registerFrontEndRoute(r)
 
-	apiRouter := router.Group("/admin/")
-	//set route permission
-	apiRouter.Use(middleware.JWTAuthMiddleware)
-
-	apiRouter.GET("/user", apicontrollers.GetUsers)
+	//test router, only activate when it is in "dev" environment
+	registerTestRoute(r)
 }
 
-//RegisterAuthRoute provides authentication functions such as generate token
-func RegisterAuthRoute(router *gin.Engine) {
-	authRouter := router.Group("/auth/")
-	authRouter.POST("/user", apicontrollers.AddUser)
-	authRouter.POST("/", apicontrollers.GenerateToken)
+//registerAdminRoute register all routes for admin functions
+func registerAdminRoute(router *gin.RouterGroup) {
+	r := router.Group("/admin")
+	//set route permission
+	r.Use(middleware.JWTAuthMiddleware)
+	r.GET("/users", apicontrollers.GetUsers)
+
+	//fields
+	r.GET("/fields", apicontrollers.GetFields)
+	r.GET("/fields/:id", apicontrollers.GetFieldsByID)
+	r.POST("/fields", apicontrollers.AddField)
+	r.PUT("/fields/:id", apicontrollers.UpdateField)
+	r.DELETE("/fields/:id", apicontrollers.DeleteField)
+}
+
+//registerAuthRoute provides authentication functions such as generate token
+func registerAuthRoute(router *gin.RouterGroup) {
+	r := router.Group("/auth")
+	r.POST("/user", apicontrollers.AddUser)
+	r.POST("/", apicontrollers.GenerateToken)
 
 	//below are the auth router that requires token authentication
-	requiredTokenRouter := authRouter.Group("/")
+	requiredTokenRouter := r.Group("/")
 	requiredTokenRouter.Use(middleware.JWTAuthMiddleware)
 	requiredTokenRouter.GET("/", apicontrollers.RefreshToken)
 }
 
-//RegisterTestRoute is for testing only
-func RegisterTestRoute(router *gin.Engine) {
-	testRouter := router.Group("/test/")
-	testRouter.Use(middleware.RoleAuthMiddleware)
-	testRouter.GET("/getusers", apicontrollers.GetUsers)
-	testRouter.GET("/bbc", apicontrollers.GetUsers)
-	testRouter.GET("/drop", apicontrollers.DropDB)
+//registerFrontEndRoute is the routers that does not require any authentications
+func registerFrontEndRoute(router *gin.RouterGroup) {
+	r := router.Group("/")
+	print(r)
+}
+
+//registerTestRoute is for testing only, it will only register the routes if it is in "dev" environment
+func registerTestRoute(router *gin.RouterGroup) {
+	//test routes
+	if common.Config.ENV == "dev" {
+		r := router.Group("/test/")
+		r.Use(middleware.RoleAuthMiddleware)
+		r.GET("/getusers", apicontrollers.GetUsers)
+		r.GET("/drop", apicontrollers.DropDB)
+	}
+
 }

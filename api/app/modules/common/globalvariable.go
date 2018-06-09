@@ -11,6 +11,17 @@ func InitiateGlobalVariables() {
 	Enums.loadOtherEnums()
 }
 
+//LoadHTTPStatus sets the basic HTTPStatus
+func (enums *enum) loadHTTPStatus() {
+	enums.HTTPStatus.OK = 200
+	enums.HTTPStatus.MovedPermanently = 301
+	enums.HTTPStatus.BadRequest = 400
+	enums.HTTPStatus.Unauthorized = 401
+	enums.HTTPStatus.NotFound = 404
+	enums.HTTPStatus.Conflict = 409
+	enums.HTTPStatus.NoContent = 204
+}
+
 //LoadOtherEnums assign values to enums
 func (enums *enum) loadOtherEnums() {
 	enums.Others.IDInHeader = "email"
@@ -36,9 +47,9 @@ func (enums *enum) loadRoleEnums() {
 
 //LoadFieldEnums loads a list of fields
 func (enums *enum) loadFieldEnums() {
-	enums.Fields.Dropdown = "Dropdown"
-	enums.Fields.TextArea = "TextArea"
-	enums.Fields.TextField = "TextField"
+	enums.FieldTypes.Dropdown = "Dropdown"
+	enums.FieldTypes.TextArea = "TextArea"
+	enums.FieldTypes.TextBox = "TextBox"
 }
 
 //Structs
@@ -54,7 +65,12 @@ type enum struct {
 	//Roles provides a list of roles
 	Roles role
 	//Field Type
-	Fields field
+	FieldTypes fieldType
+}
+
+//HTTPStatusStruct is the struct for http status
+type hTTPStatusStruct struct {
+	OK, MovedPermanently, BadRequest, Unauthorized, NotFound, Conflict, NoContent int
 }
 
 //ErrorMessage is the collection of error messages
@@ -73,8 +89,8 @@ type other struct {
 }
 
 //Field is a type for field
-type field struct {
-	Dropdown, TextField, TextArea string
+type fieldType struct {
+	Dropdown, TextBox, TextArea string
 }
 
 //*Normal Global Variables*//

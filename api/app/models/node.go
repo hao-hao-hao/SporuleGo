@@ -67,11 +67,11 @@ func GetNode(query bson.M) (*Node, error) {
 
 //GetNodeByID returns node by given ID
 func GetNodeByID(id bson.ObjectId) (*Node, error) {
-	node, err := GetNode(bson.M{"id": id})
+	node, err := GetNode(bson.M{"_id": id})
 	return node, err
 }
 
 //DeleteNode deletes the selected node by Id
 func DeleteNode(id bson.ObjectId) error {
-	return common.Delete(nodeCollection, bson.M{"id": id}, true)
+	return common.Delete(nodeCollection, bson.M{"_id": id}, true)
 }

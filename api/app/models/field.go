@@ -23,6 +23,7 @@ func NewField(name, fieldType string) (*Field, error) {
 		return nil, errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	field := &Field{}
+	field.ID = bson.NewObjectId()
 	field.Name = name
 	field.FieldType = fieldType
 	return field, nil
@@ -40,8 +41,11 @@ func (field *Field) Insert() error {
 }
 
 //Update updates the Field to the database
-func (field *Field) Update() error {
-	err := common.Update(fieldCollection, bson.M{"_id": field.ID}, field, false)
+func (field *Field) Update(id bson.ObjectId) error {
+	if common.CheckNil(id) {
+		id = field.ID
+	}
+	err := common.Update(fieldCollection, bson.M{"_id": id}, field, false)
 	return err
 }
 
@@ -57,6 +61,15 @@ func GetField(query bson.M) (*Field, error) {
 	defer s.Close()
 	err := c.Find(query).One(&field)
 	return &field, err
+}
+
+//GetFields returns fields according to the filter query
+func GetFields(query bson.M) (*[]Field, error) {
+	var fields []Field
+	s, c := common.Collection(fieldCollection)
+	defer s.Close()
+	err := c.Find(query).All(&fields)
+	return &fields, err
 }
 
 //GetFieldByID returns field by id

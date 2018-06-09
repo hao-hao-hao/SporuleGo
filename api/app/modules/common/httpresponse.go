@@ -4,28 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//HTTPStatusStruct is the struct for http status
-type hTTPStatusStruct struct {
-	OK, MovedPermanently, BadRequest, Unauthorized, NotFound int
-}
-
-//LoadHTTPStatus sets the basic HTTPStatus
-func (enums *enum) loadHTTPStatus() {
-	enums.HTTPStatus.OK = 200
-	enums.HTTPStatus.MovedPermanently = 301
-	enums.HTTPStatus.BadRequest = 400
-	enums.HTTPStatus.Unauthorized = 401
-	enums.HTTPStatus.NotFound = 404
-}
-
 //HTTPResponse is a generic response function which sets the structure of return
 func HTTPResponse(c *gin.Context, code int, results *gin.H, err string) {
 	body := gin.H{}
 	if CheckNil(err) {
-		body["error"] = err
-	}
-	if CheckNil(results) {
-		body["results"] = *results
+		body["errors"] = err
+	} else if CheckNil(results) {
+		body["data"] = *results
 	}
 	c.JSON(code, body)
 }
@@ -44,5 +29,18 @@ func HTTPResponse401(c *gin.Context) {
 
 //HTTPResponse200 return 200 OK with results
 func HTTPResponse200(c *gin.Context, results *gin.H, err string) {
+	if results == nil {
+		results = &gin.H{}
+	}
 	HTTPResponse(c, Enums.HTTPStatus.OK, results, err)
+}
+
+//HTTPResponse409 is the conflict response
+func HTTPResponse409(c *gin.Context) {
+	c.AbortWithStatus(Enums.HTTPStatus.Conflict)
+}
+
+//HTTPResponse204 is the no content response
+func HTTPResponse204(c *gin.Context) {
+	c.AbortWithStatus(Enums.HTTPStatus.NoContent)
 }

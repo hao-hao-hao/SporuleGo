@@ -21,7 +21,7 @@ func AddUser(c *gin.Context) {
 	}
 	err = user.Register()
 	if err == nil {
-		err = errors.New("No Error")
+		err = errors.New("")
 	} else {
 		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 	}
