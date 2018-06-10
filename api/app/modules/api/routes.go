@@ -30,10 +30,17 @@ func registerAdminRoute(router *gin.RouterGroup) {
 
 	//fields
 	r.GET("/fields", apicontrollers.GetFields)
-	r.GET("/fields/:id", apicontrollers.GetFieldsByID)
+	r.GET("/fields/:id", apicontrollers.GetFieldByID)
 	r.POST("/fields", apicontrollers.AddField)
 	r.PUT("/fields/:id", apicontrollers.UpdateField)
 	r.DELETE("/fields/:id", apicontrollers.DeleteField)
+
+	//roles
+	r.GET("/roles", apicontrollers.GetRoles)
+	r.GET("/roles/:id", apicontrollers.GetRoleByID)
+	r.POST("/roles", apicontrollers.AddRole)
+	r.PUT("/roles/:id", apicontrollers.UpdateRole)
+	r.DELETE("/roles/:id", apicontrollers.DeleteRole)
 }
 
 //registerAuthRoute provides authentication functions such as generate token

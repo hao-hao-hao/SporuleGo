@@ -42,8 +42,10 @@ func (field *Field) Insert() error {
 
 //Update updates the Field to the database
 func (field *Field) Update(id bson.ObjectId) error {
-	if common.CheckNil(id) {
+	if !common.CheckNil(id) {
 		id = field.ID
+	} else {
+		field.ID = id
 	}
 	err := common.Update(fieldCollection, bson.M{"_id": id}, field, false)
 	return err

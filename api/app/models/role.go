@@ -12,7 +12,7 @@ const roleCollection = "role"
 
 //Role is for permission management
 type Role struct {
-	ID   bson.ObjectId `bson:"ID"`
+	ID   bson.ObjectId `bson:"_id"`
 	Name string        `bson:"name"`
 }
 
@@ -32,7 +32,7 @@ func (role *Role) Insert() error {
 	if !common.CheckNil(role.Name) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
-	tempRole, _ := GetUserByEmail(role.Name)
+	tempRole, _ := GetRoleByName(role.Name)
 	if common.CheckNil(tempRole.Name) {
 		return errors.New(common.Enums.ErrorMessages.RecordExist)
 	}
@@ -43,8 +43,13 @@ func (role *Role) Insert() error {
 }
 
 //Update updates the role to the database
-func (role *Role) Update() error {
-	err := common.Update(roleCollection, bson.M{"_id": role.ID}, role, false)
+func (role *Role) Update(id bson.ObjectId) error {
+	if !common.CheckNil(id) {
+		id = role.ID
+	} else {
+		role.ID = id
+	}
+	err := common.Update(roleCollection, bson.M{"_id": id}, role, false)
 	return err
 }
 
@@ -60,6 +65,15 @@ func GetRole(query bson.M) (*Role, error) {
 	defer s.Close()
 	err := c.Find(query).One(&role)
 	return &role, err
+}
+
+//GetRoles returns roles according to the filter query
+func GetRoles(query bson.M) (*[]Role, error) {
+	var roles []Role
+	s, c := common.Collection(roleCollection)
+	defer s.Close()
+	err := c.Find(query).All(&roles)
+	return &roles, err
 }
 
 //GetRoleByID returns field by id

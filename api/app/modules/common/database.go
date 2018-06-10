@@ -89,6 +89,7 @@ func Delete(collection string, selector interface{}, isAll bool) error {
 	var err error
 	if isAll {
 		_, err = c.RemoveAll(selector)
+		return err
 	}
 	err = c.Remove(selector)
 	return err
