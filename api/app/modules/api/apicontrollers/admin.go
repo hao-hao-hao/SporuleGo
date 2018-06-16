@@ -14,16 +14,19 @@ func AddUser(c *gin.Context) {
 	err := c.BindJSON(&tempUser)
 	if err != nil {
 		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
+		return
 	}
 	user, err := models.NewUser(tempUser.Email, tempUser.Password, tempUser.Name, tempUser.Roles)
 	if err != nil {
 		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
+		return
 	}
 	err = user.Register()
 	if err == nil {
 		err = errors.New("")
 	} else {
 		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
+		return
 	}
 	common.HTTPResponse200(c, &gin.H{"user": user}, common.GetError(err))
 }

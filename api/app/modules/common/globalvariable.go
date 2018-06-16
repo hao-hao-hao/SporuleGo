@@ -3,7 +3,9 @@ package common
 //InitiateGlobalVariables initiates all global variables
 func InitiateGlobalVariables() {
 	//load configuration
-	Config.LoadConfiguration("dev.json")
+	Config.LoadConfiguration("config/dev.json")
+	//load Resources - the database
+	Resources, _ = NewMongoDB(Config.Host, Config.Database, Config.Username, Config.Password, Config.DropDB)
 	Enums.loadHTTPStatus()
 	Enums.loadErrorMessageEnums()
 	Enums.loadRoleEnums()

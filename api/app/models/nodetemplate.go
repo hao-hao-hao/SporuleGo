@@ -36,7 +36,7 @@ func (nodeTemplate *NodeTemplate) Insert() error {
 	if !common.CheckNil(nodeTemplate.Name, nodeTemplate.Fields, nodeTemplate.Template) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
-	if common.Create(nodeTemplateCollection, nodeTemplate) != nil {
+	if common.Resources.Create(nodeTemplateCollection, nodeTemplate) != nil {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	return nil
@@ -44,22 +44,27 @@ func (nodeTemplate *NodeTemplate) Insert() error {
 
 //Update updates the node template to the database
 func (nodeTemplate *NodeTemplate) Update() error {
-	err := common.Update(nodeTemplateCollection, bson.M{"_id": nodeTemplate.ID}, nodeTemplate, false)
+	err := common.Resources.Update(nodeTemplateCollection, bson.M{"_id": nodeTemplate.ID}, nodeTemplate, false)
 	return err
 }
 
 //DeleteNodeTemplate deletes the selected node by Id
 func DeleteNodeTemplate(id bson.ObjectId) error {
-	return common.Delete(nodeTemplateCollection, bson.M{"_id": id}, true)
+	return common.Resources.Delete(nodeTemplateCollection, bson.M{"_id": id}, true)
 }
 
 //GetNodeTemplate returns a node Template according to the filter query
 func GetNodeTemplate(query bson.M) (*NodeTemplate, error) {
 	var nodeTemplate NodeTemplate
-	s, c := common.Collection(nodeTemplateCollection)
-	defer s.Close()
-	err := c.Find(query).One(&nodeTemplate)
+	err := common.Resources.Get(nodeTemplateCollection, &nodeTemplate, query)
 	return &nodeTemplate, err
+}
+
+//GetNodeTemplates returns node templates according to the filter query
+func GetNodeTemplates(query bson.M) (*[]NodeTemplate, error) {
+	var nodeTempaltes []NodeTemplate
+	err := common.Resources.GetAll(nodeTemplateCollection, &nodeTempaltes, query)
+	return &nodeTempaltes, err
 }
 
 //GetNoteTemplateByID returns node template by id

@@ -54,7 +54,7 @@ func (user *User) Register() error {
 	if common.CheckNil(tempUser.Email) {
 		return errors.New(common.Enums.ErrorMessages.UserExist)
 	}
-	if common.Create(userCollection, user) != nil {
+	if common.Resources.Create(userCollection, user) != nil {
 		return errors.New(common.Enums.ErrorMessages.SystemError)
 	}
 	return nil
@@ -84,25 +84,21 @@ func (user *User) UpdateTokenSalt() error {
 
 //Update updates the user to the database
 func (user *User) Update() error {
-	err := common.Update(userCollection, bson.M{"_id": user.ID}, user, false)
+	err := common.Resources.Update(userCollection, bson.M{"_id": user.ID}, user, false)
 	return err
 }
 
 //GetUser returns a user according to the filter query
 func GetUser(query bson.M) (*User, error) {
 	var user User
-	s, c := common.Collection(userCollection)
-	defer s.Close()
-	err := c.Find(query).One(&user)
+	err := common.Resources.Get(userCollection, &user, query)
 	return &user, err
 }
 
 //GetUsers returns an user slice according to the filter
 func GetUsers(query bson.M) (*[]User, error) {
 	var users []User
-	s, c := common.Collection(userCollection)
-	defer s.Close()
-	err := c.Find(query).All(&users)
+	err := common.Resources.GetAll(userCollection, &users, query)
 	return &users, err
 }
 

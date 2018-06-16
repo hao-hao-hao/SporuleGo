@@ -36,7 +36,7 @@ func (role *Role) Insert() error {
 	if common.CheckNil(tempRole.Name) {
 		return errors.New(common.Enums.ErrorMessages.RecordExist)
 	}
-	if common.Create(roleCollection, role) != nil {
+	if common.Resources.Create(roleCollection, role) != nil {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	return nil
@@ -49,30 +49,26 @@ func (role *Role) Update(id bson.ObjectId) error {
 	} else {
 		role.ID = id
 	}
-	err := common.Update(roleCollection, bson.M{"_id": id}, role, false)
+	err := common.Resources.Update(roleCollection, bson.M{"_id": id}, role, false)
 	return err
 }
 
 //DeleteRole deletes the selected role by Id
 func DeleteRole(id bson.ObjectId) error {
-	return common.Delete(roleCollection, bson.M{"_id": id}, true)
+	return common.Resources.Delete(roleCollection, bson.M{"_id": id}, true)
 }
 
 //GetRole returns a role according to the filter query
 func GetRole(query bson.M) (*Role, error) {
 	var role Role
-	s, c := common.Collection(roleCollection)
-	defer s.Close()
-	err := c.Find(query).One(&role)
+	err := common.Resources.Get(roleCollection, &role, query)
 	return &role, err
 }
 
 //GetRoles returns roles according to the filter query
 func GetRoles(query bson.M) (*[]Role, error) {
 	var roles []Role
-	s, c := common.Collection(roleCollection)
-	defer s.Close()
-	err := c.Find(query).All(&roles)
+	err := common.Resources.GetAll(roleCollection, &roles, query)
 	return &roles, err
 }
 

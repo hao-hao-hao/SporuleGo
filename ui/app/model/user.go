@@ -40,7 +40,7 @@ func NewUser(email, password, name string, roles []Role) *User {
 
 //Register adds User to database if it is not exist already. It will return an error if the user it is in the database
 func (user *User) Register() error {
-	err := common.Create(collection, user)
+	err := common.Resources.Create(collection, user)
 	return err
 }
 

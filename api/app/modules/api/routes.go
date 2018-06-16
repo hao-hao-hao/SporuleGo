@@ -26,6 +26,8 @@ func registerAdminRoute(router *gin.RouterGroup) {
 	r := router.Group("/admin")
 	//set route permission
 	r.Use(middleware.JWTAuthMiddleware)
+
+	//users
 	r.GET("/users", apicontrollers.GetUsers)
 
 	//fields
@@ -68,7 +70,6 @@ func registerTestRoute(router *gin.RouterGroup) {
 		r := router.Group("/test/")
 		r.Use(middleware.RoleAuthMiddleware)
 		r.GET("/getusers", apicontrollers.GetUsers)
-		r.GET("/drop", apicontrollers.DropDB)
 	}
 
 }

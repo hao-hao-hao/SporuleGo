@@ -13,7 +13,6 @@ func main() {
 
 	//initiate application
 	common.InitiateGlobalVariables()
-	common.InitiateDatabase()
 
 	//set router to gin default router with logger
 	router := gin.Default()

@@ -41,7 +41,7 @@ func (node *Node) Insert() error {
 	if !common.CheckNil(node.Name, node.NodeTemplate, node.Permission) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
-	if common.Create(nodeCollection, node) != nil {
+	if common.Resources.Create(nodeCollection, node) != nil {
 		return errors.New(common.Enums.ErrorMessages.SystemError)
 	}
 	return nil
@@ -50,18 +50,14 @@ func (node *Node) Insert() error {
 //GetNodes returns an node slice according to the filter
 func GetNodes(query bson.M) (*[]Node, error) {
 	var nodes []Node
-	s, c := common.Collection(nodeCollection)
-	defer s.Close()
-	err := c.Find(query).All(&nodes)
+	err := common.Resources.GetAll(nodeCollection, &nodes, query)
 	return &nodes, err
 }
 
 //GetNode returns a node according to the filter query
 func GetNode(query bson.M) (*Node, error) {
 	var node Node
-	s, c := common.Collection(nodeCollection)
-	defer s.Close()
-	err := c.Find(query).One(&node)
+	err := common.Resources.Get(nodeCollection, &node, query)
 	return &node, err
 }
 
@@ -73,5 +69,5 @@ func GetNodeByID(id bson.ObjectId) (*Node, error) {
 
 //DeleteNode deletes the selected node by Id
 func DeleteNode(id bson.ObjectId) error {
-	return common.Delete(nodeCollection, bson.M{"_id": id}, true)
+	return common.Resources.Delete(nodeCollection, bson.M{"_id": id}, true)
 }

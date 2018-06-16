@@ -34,7 +34,7 @@ func (field *Field) Insert() error {
 	if !common.CheckNil(field.Name, field.FieldType) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
-	if common.Create(fieldCollection, field) != nil {
+	if common.Resources.Create(fieldCollection, field) != nil {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	return nil
@@ -47,30 +47,26 @@ func (field *Field) Update(id bson.ObjectId) error {
 	} else {
 		field.ID = id
 	}
-	err := common.Update(fieldCollection, bson.M{"_id": id}, field, false)
+	err := common.Resources.Update(fieldCollection, bson.M{"_id": id}, field, false)
 	return err
 }
 
 //DeleteField deletes the selected field by Id
 func DeleteField(id bson.ObjectId) error {
-	return common.Delete(fieldCollection, bson.M{"_id": id}, true)
+	return common.Resources.Delete(fieldCollection, bson.M{"_id": id}, false)
 }
 
 //GetField returns a field according to the filter query
 func GetField(query bson.M) (*Field, error) {
 	var field Field
-	s, c := common.Collection(fieldCollection)
-	defer s.Close()
-	err := c.Find(query).One(&field)
+	err := common.Resources.Get(fieldCollection, &field, query)
 	return &field, err
 }
 
 //GetFields returns fields according to the filter query
 func GetFields(query bson.M) (*[]Field, error) {
 	var fields []Field
-	s, c := common.Collection(fieldCollection)
-	defer s.Close()
-	err := c.Find(query).All(&fields)
+	err := common.Resources.GetAll(fieldCollection, &fields, query)
 	return &fields, err
 }
 
