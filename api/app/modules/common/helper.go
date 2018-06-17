@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"reflect"
 	"strconv"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
@@ -62,6 +63,8 @@ func GetError(err error) string {
 
 //GenerateRandomString provides random strings
 func GenerateRandomString() string {
+	time.Sleep(1 * time.Nanosecond)
+	rand.Seed(time.Now().UnixNano())
 	return strconv.Itoa(rand.Intn(88888))
 }
 
