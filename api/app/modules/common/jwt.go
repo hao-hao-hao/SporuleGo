@@ -58,6 +58,7 @@ func GetIDInHeader(c *gin.Context) string {
 	if !CheckNil(id) {
 		//return 401 if id is not found to be defensive
 		HTTPResponse401(c)
+		return ""
 	}
 	return id.(string)
 }

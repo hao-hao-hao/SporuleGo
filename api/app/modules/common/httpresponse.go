@@ -9,7 +9,7 @@ func HTTPResponse(c *gin.Context, code int, results *gin.H, err string) {
 	body := gin.H{}
 	if CheckNil(err) {
 		body["errors"] = err
-	} else if CheckNil(results) {
+	} else {
 		body["data"] = *results
 	}
 	c.JSON(code, body)
