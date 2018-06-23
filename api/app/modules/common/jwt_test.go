@@ -11,7 +11,7 @@ import (
 func TestGetIDInHeader(t *testing.T) {
 	convey.Convey("Testing GetIDInHeader", t, func() {
 		Enums.loadOtherEnums()
-		convey.Convey("It should return the id abc", func() {
+		convey.Convey("ID abc is in the header, It should return the id abc", func() {
 			c := &gin.Context{}
 			c.Set(Enums.Others.IDInHeader, "abc")
 			monkey.Patch(CheckNil, func(_ ...interface{}) bool {
@@ -20,7 +20,7 @@ func TestGetIDInHeader(t *testing.T) {
 			convey.So(GetIDInHeader(c), convey.ShouldEqual, "abc")
 		})
 
-		convey.Convey("It should throw abort error if id header is not set", func() {
+		convey.Convey("No ID in the header, It should throw abort error", func() {
 			c := &gin.Context{}
 			monkey.Patch(CheckNil, func(_ ...interface{}) bool {
 				return false

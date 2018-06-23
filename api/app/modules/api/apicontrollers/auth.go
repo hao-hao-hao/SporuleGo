@@ -27,10 +27,12 @@ func RefreshToken(c *gin.Context) {
 	email := common.GetIDInHeader(c)
 	if !common.CheckNil(email) {
 		common.HTTPResponse401(c)
+		return
 	}
 	user, err := models.GetUserByEmail(email)
 	if common.CheckNil(err) {
 		common.HTTPResponse401(c)
+		return
 	}
 	if user.UpdateTokenSalt() != nil {
 		common.HTTPResponse200(c, &gin.H{}, common.Enums.ErrorMessages.SystemError)

@@ -53,8 +53,8 @@ func (role *Role) Update(id bson.ObjectId) error {
 	return err
 }
 
-//DeleteRole deletes the selected role by Id
-func DeleteRole(id bson.ObjectId) error {
+//DeleteRoleByID deletes the selected role by Id
+func DeleteRoleByID(id bson.ObjectId) error {
 	return common.Resources.Delete(roleCollection, bson.M{"_id": id}, true)
 }
 

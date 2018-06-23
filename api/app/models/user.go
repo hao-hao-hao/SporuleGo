@@ -41,8 +41,9 @@ func NewUser(email, password, name string, roles []Role) (user *User, err error)
 		user.TokenSalt = common.GenerateRandomString()
 	} else {
 		err = errors.New(common.Enums.ErrorMessages.LackOfRegInfo)
+		return nil, err
 	}
-	return user, err
+	return user, nil
 }
 
 //Register adds User to database if it is not exist already. It will return an error if the user it is in the database

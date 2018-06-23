@@ -15,7 +15,7 @@ func TestHTTPResponse(t *testing.T) {
 		monkey.PatchInstanceMethod(reflect.TypeOf(c), "JSON", func(_ *gin.Context, _ int, body interface{}) {
 			c.Set("Test", body)
 		})
-		convey.Convey("It should contain error without data if error is not nil", func() {
+		convey.Convey("Contains error, It should contain error in the result without results", func() {
 			monkey.Patch(CheckNil, func(_ ...interface{}) bool {
 				return true
 			})
@@ -27,7 +27,7 @@ func TestHTTPResponse(t *testing.T) {
 			convey.So(output, convey.ShouldNotContainKey, "data")
 		})
 
-		convey.Convey("It should contain data without error if error is nil", func() {
+		convey.Convey("Does not contain error, It should contain data without error", func() {
 			monkey.Patch(CheckNil, func(_ ...interface{}) bool {
 				return false
 			})

@@ -63,17 +63,17 @@ func AddField(c *gin.Context) {
 	var tempField models.Field
 	err := c.BindJSON(&tempField)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	field, err := models.NewField(tempField.Name, tempField.FieldType)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	err = field.Insert()
 	if err != nil {
-		common.HTTPResponse409(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	common.HTTPResponse200(c, &gin.H{"field": field}, "")
@@ -120,17 +120,17 @@ func AddRole(c *gin.Context) {
 	var tempRole models.Role
 	err := c.BindJSON(&tempRole)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	role, err := models.NewRole(tempRole.Name)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	err = role.Insert()
 	if err != nil {
-		common.HTTPResponse409(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	common.HTTPResponse200(c, &gin.H{"role": role}, "")
@@ -141,16 +141,18 @@ func UpdateRole(c *gin.Context) {
 	var role models.Role
 	id, err := common.StringToObjectID(c.Param("id"))
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	err = c.BindJSON(&role)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
+		return
 	}
 	err = role.Update(id)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
+		return
 	}
 	common.HTTPResponse200(c, &gin.H{"role": role}, "")
 }
@@ -165,28 +167,28 @@ func GetRoles(c *gin.Context) {
 func GetRoleByID(c *gin.Context) {
 	id, err := common.StringToObjectID(c.Param("id"))
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	role, err := models.GetRoleByID(id)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
 	common.HTTPResponse200(c, &gin.H{"role": role}, "")
 }
 
-//DeleteRole deletes the role by id
-func DeleteRole(c *gin.Context) {
+//DeleteRoleByID deletes the role by id
+func DeleteRoleByID(c *gin.Context) {
 	id, err := common.StringToObjectID(c.Param("id"))
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
-	err = models.DeleteRole(id)
+	err = models.DeleteRoleByID(id)
 	if err != nil {
-		common.HTTPResponse404(c)
+		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
-	common.HTTPResponse200(c, &gin.H{}, "")
+	common.HTTPResponse200(c, &gin.H{"result": "Deleted"}, "")
 }

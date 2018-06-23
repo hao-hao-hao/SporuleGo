@@ -1,20 +1,30 @@
 package models
 
 import (
+	"sporule/api/app/modules/common"
 	"testing"
+
+	"github.com/bouk/monkey"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func TestNewField(t *testing.T) {
-	t.Log("A user with empty name or empty fieldType ")
-	field, err := NewField("", "")
-	if err == nil {
-		t.Error("error should be raised if name or field is empty")
-	}
-	t.Log("Test to see if a new field can be created properly")
-	name := "textbox"
-	fieldType := "textbox"
-	field, err = NewField(name, fieldType)
-	if len(field.ID) <= 0 || field.Name != name || field.FieldType != fieldType {
-		t.Error("Failure when creating new field")
-	}
+	convey.Convey("Testing NewField constructor", t, func() {
+		convey.Convey("Name is empty, so result should be nil, error message should not be nil", func() {
+			monkey.Patch(common.CheckNil, func(_ ...interface{}) bool {
+				return false
+			})
+			result, err := NewField("", "Other")
+			convey.So(err, convey.ShouldNotBeNil)
+			convey.So(result, convey.ShouldBeNil)
+		})
+		convey.Convey("Both Name and Field is not empty, so result should not be nil and error should be nil", func() {
+			monkey.Patch(common.CheckNil, func(_ ...interface{}) bool {
+				return true
+			})
+			result, err := NewField("", "Other")
+			convey.So(result, convey.ShouldNotBeNil)
+			convey.So(err, convey.ShouldBeNil)
+		})
+	})
 }
