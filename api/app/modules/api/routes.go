@@ -42,7 +42,7 @@ func registerAdminRoute(router *gin.RouterGroup) {
 	r.GET("/roles/:id", apicontrollers.GetRoleByID)
 	r.POST("/roles", apicontrollers.AddRole)
 	r.PUT("/roles/:id", apicontrollers.UpdateRole)
-	r.DELETE("/roles/:id", apicontrollers.DeleteRole)
+	r.DELETE("/roles/:id", apicontrollers.DeleteRoleByID)
 }
 
 //registerAuthRoute provides authentication functions such as generate token
