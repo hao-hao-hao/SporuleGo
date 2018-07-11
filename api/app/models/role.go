@@ -12,7 +12,7 @@ const roleCollection = "role"
 
 //Role is for permission management
 type Role struct {
-	ID   bson.ObjectId `bson:"_id"`
+	ID   bson.ObjectId `bson:"_id,omitempty"`
 	Name string        `bson:"name"`
 }
 
@@ -61,14 +61,14 @@ func DeleteRoleByID(id bson.ObjectId) error {
 //GetRole returns a role according to the filter query
 func GetRole(query bson.M) (*Role, error) {
 	var role Role
-	err := common.Resources.Get(roleCollection, &role, query)
+	err := common.Resources.Get(roleCollection, &role, query, nil)
 	return &role, err
 }
 
 //GetRoles returns roles according to the filter query
 func GetRoles(query bson.M) (*[]Role, error) {
 	var roles []Role
-	err := common.Resources.GetAll(roleCollection, &roles, query)
+	err := common.Resources.GetAll(roleCollection, &roles, query, nil)
 	return &roles, err
 }
 

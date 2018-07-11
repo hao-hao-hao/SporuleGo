@@ -29,6 +29,7 @@ func registerAdminRoute(router *gin.RouterGroup) {
 
 	//users
 	r.GET("/users", apicontrollers.GetUsers)
+	r.PUT("/users/:id", apicontrollers.UpdateUser)
 
 	//fields
 	r.GET("/fields", apicontrollers.GetFields)

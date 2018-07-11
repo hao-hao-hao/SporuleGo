@@ -28,3 +28,14 @@ func TestNewNodeTemplate(t *testing.T) {
 		})
 	})
 }
+
+func TestGetNodeTemplatesByFields(t *testing.T) {
+	convey.Convey("Testing GetNodeTemplatesByFields", t, func() {
+		convey.Convey("Correct Field should return correct item", func() {
+			field, err := NewField("textbox", "TextArea")
+			err = field.Insert()
+			print(err)
+			convey.So("1", convey.ShouldEqual, "1")
+		})
+	})
+}

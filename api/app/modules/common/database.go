@@ -8,10 +8,10 @@ import (
 //Resource is the interface for dbs
 type Resource interface {
 	Create(table string, item interface{}) error
-	Get(table string, object interface{}, selector interface{}) error
-	GetAll(table string, objects interface{}, selector interface{}) error
-	Update(table string, selector, updatedItem interface{}, updateAll bool) error
-	Delete(table string, selector interface{}, RemoveAll bool) error
+	Get(table string, object, query interface{}, extraQuery func(*mgo.Query) *mgo.Query) error
+	GetAll(table string, objects, query interface{}, extraQuery func(*mgo.Query) *mgo.Query) error
+	Update(table string, query, updatedItem interface{}, updateAll bool) error
+	Delete(table string, query interface{}, RemoveAll bool) error
 }
 
 //MongoDB Type provides the basic connection string
@@ -64,45 +64,53 @@ func (db *MongoDB) Create(collection string, item interface{}) error {
 	return err
 }
 
-//Get gets single item that matches selector, for example bson.M{"_id": id}
-func (db *MongoDB) Get(table string, object interface{}, selector interface{}) error {
+//Get gets single item that matches query, for example bson.M{"_id": id}
+func (db *MongoDB) Get(table string, object, query interface{}, extraQuery func(*mgo.Query) *mgo.Query) error {
 	s, c := db.collection(table)
 	defer s.Close()
-	err := c.Find(selector).One(object)
+	q := c.Find(query)
+	if extraQuery != nil {
+		q = extraQuery(q)
+	}
+	err := q.One(object)
 	return err
 }
 
-//GetAll gets all item that matches selector, for example bson.M{"Name": "Hello"}
-func (db *MongoDB) GetAll(table string, objects interface{}, selector interface{}) error {
+//GetAll gets all item that matches query, for example bson.M{"Name": "Hello"}
+func (db *MongoDB) GetAll(table string, objects, query interface{}, extraQuery func(*mgo.Query) *mgo.Query) error {
 	s, c := db.collection(table)
 	defer s.Close()
-	err := c.Find(selector).All(objects)
+	q := c.Find(query)
+	if extraQuery != nil {
+		q = extraQuery(q)
+	}
+	err := q.All(objects)
 	return err
 }
 
 //Update provides Update Operation for Database
-func (db *MongoDB) Update(collection string, selector, updatedItem interface{}, UpdateAll bool) error {
+func (db *MongoDB) Update(collection string, query, updatedItem interface{}, UpdateAll bool) error {
 	s, c := db.collection(collection)
 	defer s.Close()
 	var err error
 	if UpdateAll {
-		_, err = c.UpdateAll(selector, &bson.M{"$set": updatedItem})
+		_, err = c.UpdateAll(query, bson.M{"$set": updatedItem})
 	} else {
-		err = c.Update(selector, updatedItem)
+		err = c.Update(query, updatedItem)
 	}
 	return err
 }
 
 //Delete provides Delete Operation for Database
-func (db *MongoDB) Delete(collection string, selector interface{}, RemoveAll bool) error {
+func (db *MongoDB) Delete(collection string, query interface{}, RemoveAll bool) error {
 	s, c := db.collection(collection)
 	defer s.Close()
 	var err error
 	if RemoveAll {
-		_, err = c.RemoveAll(selector)
+		_, err = c.RemoveAll(query)
 		return err
 	}
-	err = c.Remove(selector)
+	err = c.Remove(query)
 	return err
 }
 

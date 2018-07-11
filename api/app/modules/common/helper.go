@@ -78,3 +78,88 @@ func StringToObjectID(id string) (objectID bson.ObjectId, err error) {
 	objectID = bson.ObjectIdHex(id)
 	return objectID, err
 }
+
+//QueryHelper is query helper for mongo DB
+type QueryHelper struct{}
+
+//MgoQry is a public exposed functions for buildding different querys
+var MgoQry QueryHelper
+
+//All will match all queies in arrary
+func (query *QueryHelper) All(values ...interface{}) bson.M {
+	return bson.M{"$all": values}
+}
+
+//In will match any queries in arrary
+func (query *QueryHelper) In(values ...interface{}) bson.M {
+	return bson.M{"$in": values}
+}
+
+//Nin will match anything other than the queies in arrary
+func (query *QueryHelper) Nin(values ...interface{}) bson.M {
+	return bson.M{"$nin": values}
+}
+
+//Eq matches equale comparison
+func (query *QueryHelper) Eq(value interface{}) bson.M {
+	return bson.M{"$eq": value}
+}
+
+//Gt matches greater comparison
+func (query *QueryHelper) Gt(value interface{}) bson.M {
+	return bson.M{"$gt": value}
+}
+
+//Gte matches greater or equal comparison
+func (query *QueryHelper) Gte(value interface{}) bson.M {
+	return bson.M{"$gte": value}
+}
+
+//Lt matches less comparison
+func (query *QueryHelper) Lt(value interface{}) bson.M {
+	return bson.M{"$lt": value}
+}
+
+//Lte matches less or equal comparison
+func (query *QueryHelper) Lte(value interface{}) bson.M {
+	return bson.M{"$lte": value}
+}
+
+//And provides and relationship
+func (query *QueryHelper) And(values ...interface{}) bson.M {
+	return bson.M{"$and": values}
+}
+
+//Or provides and relationship
+func (query *QueryHelper) Or(values ...interface{}) bson.M {
+	return bson.M{"$Or": values}
+}
+
+//Not provides NOT relationship
+func (query *QueryHelper) Not(value interface{}) bson.M {
+	return bson.M{"$not": value}
+}
+
+//Nor provides NOR relationship
+func (query *QueryHelper) Nor(values ...interface{}) bson.M {
+	return bson.M{"$nor": values}
+}
+
+//Slice sets the item skip and limit of the query
+func (query *QueryHelper) Slice(skip, limit int) bson.M {
+	return bson.M{"$slice": []int{skip, limit}}
+}
+
+//Select takes fields name and returns the "filenames":"1" to select the input fields
+func (query *QueryHelper) Select(values ...string) bson.M {
+	selector := bson.M{}
+	for _, value := range values {
+		selector[value] = 1
+	}
+	return selector
+}
+
+//Bson returns a bson.M key value
+func (query *QueryHelper) Bson(key string, value interface{}) bson.M {
+	return bson.M{key: value}
+}

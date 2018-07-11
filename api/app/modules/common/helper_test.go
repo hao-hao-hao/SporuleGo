@@ -67,3 +67,9 @@ func TestGetError(t *testing.T) {
 		})
 	})
 }
+
+func TestStructToBSON(t *testing.T) {
+	convey.Convey("Testing StructToBSON", t, func() {
+		convey.Convey("Struct with sub struct arrays should return ")
+	})
+}

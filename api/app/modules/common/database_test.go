@@ -74,7 +74,7 @@ func TestGet(t *testing.T) {
 
 		//get by name = hello
 		var tempTest testStruct
-		err = db.Get(collection, &tempTest, bson.M{"name": "Hello"})
+		err = db.Get(collection, &tempTest, bson.M{"name": "Hello"}, nil)
 		convey.So(tempTest.Name, convey.ShouldEqual, "Hello")
 
 	})
@@ -107,7 +107,7 @@ func TestGetAll(t *testing.T) {
 
 		//get by name = hello
 		var tempTests []testStruct
-		err = db.GetAll(collection, &tempTests, bson.M{"name": "Hello"})
+		err = db.GetAll(collection, &tempTests, bson.M{"name": "Hello"}, nil)
 		convey.So(len(tempTests), convey.ShouldEqual, 2)
 
 	})

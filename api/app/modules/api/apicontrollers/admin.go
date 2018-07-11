@@ -33,8 +33,26 @@ func AddUser(c *gin.Context) {
 
 //GetUsers returns all the users
 func GetUsers(c *gin.Context) {
-	users, err := models.GetUsers(nil)
+	//flag to change
+	//user := &models.User{}
+	//role := c.Query("role")
+	//isDisabled := c.DefaultQuery("disabled", "0")
+	//user.Roles = append(user.Roles, models.Role{Name: role})
+	//user.Name = "JasonMember"
+	users, err := models.GetUsersA()
 	common.HTTPResponse200(c, &gin.H{"users": users}, common.GetError(err))
+}
+
+//UpdateUser updates the user
+func UpdateUser(c *gin.Context) {
+	id, err := common.StringToObjectID(c.Param("id"))
+	var tempUser models.User
+	err = c.BindJSON(&tempUser)
+	user, _ := models.GetUserByID(id)
+	role, _ := models.GetRoleByName(common.Enums.Roles.Admin)
+	tempUser.Roles = append(user.Roles, *role)
+	err = tempUser.Update(id)
+	common.HTTPResponse200(c, &gin.H{"user": tempUser}, common.GetError(err))
 }
 
 //GetFields returns all fields

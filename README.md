@@ -10,13 +10,20 @@
 - [ ] Changing Nodes Template for nodes will need to manually update existing nodes.
 - [ ] Nodes Fields Type will be a string enum, it needs to be matched into html in the front end.
 - [ ] All Nodes have its own permission setting, need to create a function for Nodes Permission to inheritate from Parent permission
+
 ### Nodes Template Related:
 - [ ] CRUD Operation, we can't delete the template if any nodes are using the template
 - [ ] Updating template fields, need to force update existing nodes fileds.
 
+### Fields Related:
+- [ ] CRUD Feilds Operation, updating fields will update all the fields in nodes template. 
+
 ### User Management Related:
 - [ ] CRUD User
 - [ ] CRUD Roles
+
+### Others
+- [ ] Enable Maintenance Mode - Deregister all the front end routes
 
 ## API For Frontend:
 

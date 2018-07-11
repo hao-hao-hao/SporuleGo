@@ -45,6 +45,7 @@ func (enums *enum) loadErrorMessageEnums() {
 func (enums *enum) loadRoleEnums() {
 	enums.Roles.Admin = "Admin"
 	enums.Roles.Member = "Member"
+	enums.Roles.Test = "Test"
 }
 
 //LoadFieldEnums loads a list of fields
@@ -82,7 +83,7 @@ type errorMessage struct {
 
 //Role is the collection of roles
 type role struct {
-	Admin, Member string
+	Admin, Member, Test string
 }
 
 //Other is the struct of uncategorise enums

@@ -56,14 +56,14 @@ func DeleteNodeTemplate(id bson.ObjectId) error {
 //GetNodeTemplate returns a node Template according to the filter query
 func GetNodeTemplate(query bson.M) (*NodeTemplate, error) {
 	var nodeTemplate NodeTemplate
-	err := common.Resources.Get(nodeTemplateCollection, &nodeTemplate, query)
+	err := common.Resources.Get(nodeTemplateCollection, &nodeTemplate, query, nil)
 	return &nodeTemplate, err
 }
 
 //GetNodeTemplates returns node templates according to the filter query
 func GetNodeTemplates(query bson.M) (*[]NodeTemplate, error) {
 	var nodeTempaltes []NodeTemplate
-	err := common.Resources.GetAll(nodeTemplateCollection, &nodeTempaltes, query)
+	err := common.Resources.GetAll(nodeTemplateCollection, &nodeTempaltes, query, nil)
 	return &nodeTempaltes, err
 }
 
@@ -71,4 +71,10 @@ func GetNodeTemplates(query bson.M) (*[]NodeTemplate, error) {
 func GetNoteTemplateByID(id bson.ObjectId) (*NodeTemplate, error) {
 	nodeTemplate, err := GetNodeTemplate(bson.M{"_id": id})
 	return nodeTemplate, err
+}
+
+//GetNodeTemplatesByFields returns node template by fields ID inside
+func GetNodeTemplatesByFields(fieldsID bson.ObjectId) (*[]NodeTemplate, error) {
+	//query := bson.M{}
+	return nil, nil
 }

@@ -17,6 +17,7 @@ type Node struct {
 	NodeTemplate NodeTemplate     `bson:"nodeTemplate"`
 	Content      map[Field]string `bson:"content"`
 	Permission   []Role           `bson:"permission"`
+	ParentID     bson.ObjectId    `bson:"parentID"`
 }
 
 //NewNode is the constructor foe Node
@@ -50,14 +51,14 @@ func (node *Node) Insert() error {
 //GetNodes returns an node slice according to the filter
 func GetNodes(query bson.M) (*[]Node, error) {
 	var nodes []Node
-	err := common.Resources.GetAll(nodeCollection, &nodes, query)
+	err := common.Resources.GetAll(nodeCollection, &nodes, query, nil)
 	return &nodes, err
 }
 
 //GetNode returns a node according to the filter query
 func GetNode(query bson.M) (*Node, error) {
 	var node Node
-	err := common.Resources.Get(nodeCollection, &node, query)
+	err := common.Resources.Get(nodeCollection, &node, query, nil)
 	return &node, err
 }
 

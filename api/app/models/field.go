@@ -59,14 +59,14 @@ func DeleteField(id bson.ObjectId) error {
 //GetField returns a field according to the filter query
 func GetField(query bson.M) (*Field, error) {
 	var field Field
-	err := common.Resources.Get(fieldCollection, &field, query)
+	err := common.Resources.Get(fieldCollection, &field, query, nil)
 	return &field, err
 }
 
 //GetFields returns fields according to the filter query
 func GetFields(query bson.M) (*[]Field, error) {
 	var fields []Field
-	err := common.Resources.GetAll(fieldCollection, &fields, query)
+	err := common.Resources.GetAll(fieldCollection, &fields, query, nil)
 	return &fields, err
 }
 
