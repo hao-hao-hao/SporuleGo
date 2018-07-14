@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"sporule/api/app/modules/common"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -12,12 +13,15 @@ const nodeCollection = "node"
 
 //Node contains actual content for the website
 type Node struct {
-	ID           bson.ObjectId    `bson:"_id"`
-	Name         string           `bson:"name"`
-	NodeTemplate NodeTemplate     `bson:"nodeTemplate"`
-	Content      map[Field]string `bson:"content"`
-	Permission   []Role           `bson:"permission"`
-	ParentID     bson.ObjectId    `bson:"parentID"`
+	ID           bson.ObjectId               `bson:"_id"`
+	Name         string                      `bson:"name"`
+	NodeTemplate NodeTemplate                `bson:"nodeTemplate"`
+	Content      map[Field]map[string]string `bson:"content"`
+	Permission   []Role                      `bson:"permission"`
+	ParentID     bson.ObjectId               `bson:"parentID"`
+	Owner        User                        `bson:"owner"`
+	CreatedDate  time.Time                   `bson:createdDate`
+	ModifiedDate time.Time                   `bson:modeifiedDate`
 }
 
 //NewNode is the constructor foe Node

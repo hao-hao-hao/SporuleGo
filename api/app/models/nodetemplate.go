@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"sporule/api/app/modules/common"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -12,28 +13,28 @@ const nodeTemplateCollection = "nodeTemplate"
 
 //NodeTemplate is a template for creating nodes
 type NodeTemplate struct {
-	ID       bson.ObjectId `bson:"_id"`
-	Name     string        `bson:"name"`
-	Template string        `bson:"string"`
-	Fields   []Field       `bson:"fields"`
+	ID           bson.ObjectId    `bson:"_id"`
+	Name         string           `bson:"name"`
+	Fields       map[Field]string `bson:"fields"`
+	CreatedDate  time.Time        `bson:createdDate`
+	ModifiedDate time.Time        `bson:modeifiedDate`
 }
 
 //NewNodeTemplate is the node template constructor
-func NewNodeTemplate(name, template string, fields []Field) (*NodeTemplate, error) {
-	if !common.CheckNil(name, template, fields) {
+func NewNodeTemplate(name string, fields []Field) (*NodeTemplate, error) {
+	if !common.CheckNil(name, fields) {
 		return nil, errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	nodeTemplate := &NodeTemplate{}
 	nodeTemplate.ID = bson.NewObjectId()
 	nodeTemplate.Name = name
 	nodeTemplate.Fields = fields
-	nodeTemplate.Template = template
 	return nodeTemplate, nil
 }
 
 //Insert inserts the node template to the database
 func (nodeTemplate *NodeTemplate) Insert() error {
-	if !common.CheckNil(nodeTemplate.Name, nodeTemplate.Fields, nodeTemplate.Template) {
+	if !common.CheckNil(nodeTemplate.Name, nodeTemplate.Fields) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	if common.Resources.Create(nodeTemplateCollection, nodeTemplate) != nil {

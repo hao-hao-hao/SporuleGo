@@ -79,87 +79,137 @@ func StringToObjectID(id string) (objectID bson.ObjectId, err error) {
 	return objectID, err
 }
 
-//QueryHelper is query helper for mongo DB
+//QueryHelper is query helper struct for mongo DB, this is purely for better organisations
 type QueryHelper struct{}
 
 //MgoQry is a public exposed functions for buildding different querys
 var MgoQry QueryHelper
 
+//Bson returns a bson.M key value pair
+func (query *QueryHelper) Bson(key string, value interface{}) bson.M {
+	return bson.M{key: value}
+}
+
+//Bsons returns multiple bson.M key value pairs
+func (query *QueryHelper) Bsons(keyValuePairs map[string]interface{}) bson.M {
+	qry := bson.M{}
+	for key, value := range keyValuePairs {
+		qry[key] = value
+	}
+	return qry
+}
+
 //All will match all queies in arrary
 func (query *QueryHelper) All(values ...interface{}) bson.M {
-	return bson.M{"$all": values}
+	return query.Bson("$all", values)
 }
 
 //In will match any queries in arrary
 func (query *QueryHelper) In(values ...interface{}) bson.M {
-	return bson.M{"$in": values}
+	return query.Bson("$in", values)
 }
 
 //Nin will match anything other than the queies in arrary
 func (query *QueryHelper) Nin(values ...interface{}) bson.M {
-	return bson.M{"$nin": values}
+	return query.Bson("$nin", values)
 }
 
 //Eq matches equale comparison
 func (query *QueryHelper) Eq(value interface{}) bson.M {
-	return bson.M{"$eq": value}
+	return query.Bson("$eq", value)
 }
 
 //Gt matches greater comparison
 func (query *QueryHelper) Gt(value interface{}) bson.M {
-	return bson.M{"$gt": value}
+	return query.Bson("$gt", value)
 }
 
 //Gte matches greater or equal comparison
 func (query *QueryHelper) Gte(value interface{}) bson.M {
-	return bson.M{"$gte": value}
+	return query.Bson("$gte", value)
 }
 
 //Lt matches less comparison
 func (query *QueryHelper) Lt(value interface{}) bson.M {
-	return bson.M{"$lt": value}
+	return query.Bson("$lt", value)
 }
 
 //Lte matches less or equal comparison
 func (query *QueryHelper) Lte(value interface{}) bson.M {
-	return bson.M{"$lte": value}
+	return query.Bson("$lte", value)
 }
 
 //And provides and relationship
-func (query *QueryHelper) And(values ...interface{}) bson.M {
-	return bson.M{"$and": values}
+func (query *QueryHelper) And(queries ...interface{}) bson.M {
+	return query.Bson("$and", queries)
 }
 
 //Or provides and relationship
 func (query *QueryHelper) Or(values ...interface{}) bson.M {
-	return bson.M{"$Or": values}
+	return query.Bson("$Or", values)
 }
 
 //Not provides NOT relationship
 func (query *QueryHelper) Not(value interface{}) bson.M {
-	return bson.M{"$not": value}
+	return query.Bson("$not", value)
 }
 
 //Nor provides NOR relationship
 func (query *QueryHelper) Nor(values ...interface{}) bson.M {
-	return bson.M{"$nor": values}
+	return query.Bson("$nor", values)
 }
 
 //Slice sets the item skip and limit of the query
 func (query *QueryHelper) Slice(skip, limit int) bson.M {
-	return bson.M{"$slice": []int{skip, limit}}
+	return query.Bson("$slice", []int{skip, limit})
 }
 
 //Select takes fields name and returns the "filenames":"1" to select the input fields
-func (query *QueryHelper) Select(values ...string) bson.M {
+func (query *QueryHelper) Select(isSelect bool, values ...string) bson.M {
 	selector := bson.M{}
 	for _, value := range values {
-		selector[value] = 1
+		selector[value] = isSelect
 	}
 	return selector
 }
 
-//Bson returns a bson.M key value
-func (query *QueryHelper) Bson(key string, value interface{}) bson.M {
-	return bson.M{key: value}
+//Match returns the bson.M for $match operation, this is for aggregation queries only
+func (query *QueryHelper) Match(qry interface{}) bson.M {
+	return query.Bson("$match", qry)
+}
+
+//Limit returns the bson.M for $limit operation, this is for aggregation queries only
+func (query *QueryHelper) Limit(maxReturn int) bson.M {
+	return query.Bson("$limit", maxReturn)
+}
+
+//Sort returns the bson.M for $sort operation, it takes only one fields, this is for aggregation queries only
+func (query *QueryHelper) Sort(field string, isDescending bool) bson.M {
+	order := 1
+	if isDescending {
+		// 1 is ascending and -1 is descending
+		order = -1
+	}
+	return query.Bson("$sort", query.Bson(field, order))
+}
+
+//Sorts returns the bson.M for $sort operation, it takes multiple key value pairs, this is for aggregation queries only
+//Use field name as key and 1/-1 in the value,1 is ascending and -1 is descending
+func (query *QueryHelper) Sorts(keyValuePairs map[string]interface{}) bson.M {
+	return query.Bson("$sort", query.Bsons(keyValuePairs))
+}
+
+//Project returns the bson.M for $project operation which sets the selected fields in SQL, this is for aggregation queries only
+func (query *QueryHelper) Project(qry interface{}) bson.M {
+	return query.Bson("$project", qry)
+}
+
+//LookUp returns the bson.M for $lookup operation, this is for aggregation queries only
+func (query *QueryHelper) LookUp(from, localField, foreignField, as string) bson.M {
+	qry := make(map[string]interface{})
+	qry["from"] = from
+	qry["localField"] = localField
+	qry["foreignField"] = foreignField
+	qry["as"] = as
+	return query.Bson("$lookup", query.Bsons(qry))
 }

@@ -16,7 +16,7 @@ func AddUser(c *gin.Context) {
 		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return
 	}
-	user, err := models.NewUser(tempUser.Email, tempUser.Password, tempUser.Name, tempUser.Roles)
+	user, err := models.NewUser(tempUser.Email, tempUser.Password, tempUser.Name, tempUser.RoleIds)
 	if err != nil {
 		common.HTTPResponse200(c, &gin.H{}, common.GetError(err))
 		return

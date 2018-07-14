@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"sporule/api/app/modules/common"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -12,9 +13,11 @@ const fieldCollection = "field"
 
 //Field is for the purpose of front end rendering. Such as dropdown or textbox or input string etc....
 type Field struct {
-	ID        bson.ObjectId `bson:"_id"`
-	Name      string        `bson:"name"`
-	FieldType string        `bson:"type"`
+	ID           bson.ObjectId `bson:"_id"`
+	Name         string        `bson:"name"`
+	FieldType    string        `bson:"type"`
+	CreatedDate  time.Time     `bson:createdDate`
+	ModifiedDate time.Time     `bson:modeifiedDate`
 }
 
 //NewField is the constructor for Field

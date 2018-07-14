@@ -2,37 +2,33 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"sporule/api/app/modules/common"
 	"time"
 
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 //userCollection is the collection name for Model User in mongo db
 const userCollection = "user"
 
-//User is user account which will include authentications
+//User is user account struct
 type User struct {
-	ID          bson.ObjectId `bson:"_id,omitempty"`
-	Email       string        `bson:"email,omitempty"`
-	Password    string        `bson:"password,omitempty"`
-	Name        string        `bson:"name,omitempty"`
-	LastLogin   time.Time     `bson:"lastLogin,omitempty"`
-	FailedLogin uint          `bson:"failedLogin,omitempty"`
-	TokenSalt   string        `bson:"resetToken,omitempty"`
-	IsDisabled  bool          `bson:"isDisabled,omitempty"`
-	Roles       []Role        `bson:"roles,omitempty"`
+	ID          bson.ObjectId   `bson:"_id,omitempty" json:"_id"`
+	Email       string          `bson:"email,omitempty" json:"email"`
+	Password    string          `bson:"password,omitempty" json:"-"`
+	Name        string          `bson:"name,omitempty" json:"name"`
+	RoleIds     []bson.ObjectId `bson:"roleIds,omitempty" json:"-"`
+	Roles       []Role          `bson:"roles,omitempty" json:"roles"`
+	TokenSalt   string          `bson:"resetToken,omitempty" json:"-"`
+	LastAccess  time.Time       `bson:"lastAccess,omitempty" json:"lastAccess"`
+	FailedLogin uint            `bson:"failedLogin,omitempty" json:"-"`
+	IsDisabled  bool            `bson:"isDisabled,omitempty" json:"isDisabled"`
 }
 
 //NewUser Constructor, It will create a new user object, and inject mongodb ID and hash password automatically
-func NewUser(email, password, name string, roles []Role) (user *User, err error) {
+func NewUser(email, password, name string, roleIds []bson.ObjectId) (user *User, err error) {
 	user = &User{}
-	member, error := GetRoleByName(common.Enums.Roles.Admin)
-	if error == nil {
-		roles = append(roles, *member)
-	}
+
 	//check if at least email, password, string and role is not nil
 	isValid := common.CheckNil(email, password, name)
 	encryptedPassword, _ := common.EncryptPassword(password)
@@ -43,7 +39,7 @@ func NewUser(email, password, name string, roles []Role) (user *User, err error)
 		user.Name = name
 		user.FailedLogin = 0
 		user.IsDisabled = false
-		user.Roles = roles
+		user.RoleIds = roleIds
 		user.TokenSalt = common.GenerateRandomString()
 	} else {
 		err = errors.New(common.Enums.ErrorMessages.LackOfRegInfo)
@@ -91,6 +87,7 @@ func (user *User) UpdateTokenSalt() error {
 
 //Update updates the user to the database
 func (user *User) Update(id bson.ObjectId) error {
+	user.Roles = nil
 	err := common.Resources.Update(userCollection, bson.M{"_id": id}, user, false)
 	return err
 }
@@ -112,15 +109,11 @@ func GetUsers(query bson.M) (*[]User, error) {
 //GetUsersA Updates the users
 func GetUsersA() (*[]User, error) {
 	var users []User
-	//flag change
-	//cccc, _ := bson.Marshal(*user)
-	//print(string(cccc[:]))
-	//err := common.Resources.GetAll(userCollection, &users, bson.M{"roles.name": common.MgoQry.Nin("ABC", "BBC")})
-	qry := common.MgoQry.And(common.MgoQry.Bson("roles.name", common.MgoQry.Nin("asdasd")))
-	fmt.Printf("%v", qry)
-	err := common.Resources.GetAll(userCollection, &users, qry, func(query *mgo.Query) *mgo.Query {
-		return query.Select(common.MgoQry.Select("email"))
-	})
+	filter := common.MgoQry.And(common.MgoQry.Bson("roles.name", "Admin"))
+	err := common.Resources.AggGetAll(userCollection, &users,
+		common.MgoQry.LookUp("role", "roleIds", "_id", "roles"),
+		common.MgoQry.Match(filter),
+		common.MgoQry.Project(common.MgoQry.Select(true, "email", "_id")))
 	return &users, err
 }
 
