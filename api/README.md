@@ -16,20 +16,15 @@
     - [ ] Add New Field
     - [ ] Get Field by Id or name
     - [ ] Get All Fields
-    - [ ] Update Field
+    - [ ] Update Field, needs to update all the fields in nodes as well
     - [ ] Delete Field if no node templates is using the node
-- [ ] Manage NodeTemplates
-    - [ ] Add New Node Template
-    - [ ] Get NodeTemplate By Id and Name
-    - [ ] Get All Node Templates
-    - [ ] Update NodeTemplate
-    - [ ] Delete Node Template if no nodes are using the template
 - [ ] Manage Nodes
-    - [ ] Add New Node from Node Template
-    - [ ] Get Node By Id
-    - [ ] Get Nodes By Name, Owner, parent Node Id
-    - [ ] Update Node by Id
+    - [ ] Add New Node, can be a node from node template or a node Template
+    - [ ] Get Node/Template By Id
+    - [ ] Get Nodes By Name, Owner, parent Node Id/ Get Node Template (Node without node template Id is the node template)
+    - [ ] Update Node/Node Template by Id
     - [ ] Delete Node
+    - [ ] Delete Node Template if no children nodes
 
 
 [ ] Authentication Section

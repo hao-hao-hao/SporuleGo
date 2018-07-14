@@ -13,11 +13,12 @@ const fieldCollection = "field"
 
 //Field is for the purpose of front end rendering. Such as dropdown or textbox or input string etc....
 type Field struct {
-	ID           bson.ObjectId `bson:"_id"`
-	Name         string        `bson:"name"`
-	FieldType    string        `bson:"type"`
-	CreatedDate  time.Time     `bson:createdDate`
-	ModifiedDate time.Time     `bson:modeifiedDate`
+	ID       bson.ObjectId `bson:"_id"`
+	Name     string        `bson:"name"`
+	Type     string        `bson:"type"`
+	Preset   string        `bson:"preset"`
+	Created  time.Time     `bson:created`
+	Modified time.Time     `bson:modified`
 }
 
 //NewField is the constructor for Field
@@ -28,13 +29,13 @@ func NewField(name, fieldType string) (*Field, error) {
 	field := &Field{}
 	field.ID = bson.NewObjectId()
 	field.Name = name
-	field.FieldType = fieldType
+	field.Type = fieldType
 	return field, nil
 }
 
 //Insert inserts the field to the database
 func (field *Field) Insert() error {
-	if !common.CheckNil(field.Name, field.FieldType) {
+	if !common.CheckNil(field.Name, field.Type) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	if common.Resources.Create(fieldCollection, field) != nil {

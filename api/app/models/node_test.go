@@ -1,13 +1,6 @@
 package models
 
-import (
-	"sporule/api/app/modules/common"
-	"testing"
-
-	"github.com/bouk/monkey"
-	"github.com/smartystreets/goconvey/convey"
-)
-
+/*
 func TestNewNode(t *testing.T) {
 	convey.Convey("Testing NewNode", t, func() {
 		convey.Convey("Has Nil Values: Should return error without the result", func() {
@@ -30,3 +23,4 @@ func TestNewNode(t *testing.T) {
 		})
 	})
 }
+*/

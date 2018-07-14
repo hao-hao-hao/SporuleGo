@@ -1,8 +1,6 @@
 package models
 
 import (
-	"errors"
-	"sporule/api/app/modules/common"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -13,17 +11,18 @@ const nodeCollection = "node"
 
 //Node contains actual content for the website
 type Node struct {
-	ID           bson.ObjectId               `bson:"_id"`
-	Name         string                      `bson:"name"`
-	NodeTemplate NodeTemplate                `bson:"nodeTemplate"`
-	Content      map[Field]map[string]string `bson:"content"`
-	Permission   []Role                      `bson:"permission"`
-	ParentID     bson.ObjectId               `bson:"parentID"`
-	Owner        User                        `bson:"owner"`
-	CreatedDate  time.Time                   `bson:createdDate`
-	ModifiedDate time.Time                   `bson:modeifiedDate`
+	ID             bson.ObjectId               `bson:"_id"`
+	Name           string                      `bson:"name"`
+	NodeTemplateID bson.ObjectId               `bson:"nodeTemplateID"`
+	Content        map[Field]map[string]string `bson:"content"`
+	Permission     []Role                      `bson:"permission"`
+	ParentID       bson.ObjectId               `bson:"parentID"`
+	Owner          User                        `bson:"owner"`
+	CreatedDate    time.Time                   `bson:createdDate`
+	ModifiedDate   time.Time                   `bson:modeifiedDate`
 }
 
+/*
 //NewNode is the constructor foe Node
 func NewNode(name string, nodeTemplate NodeTemplate, permission []Role) (*Node, error) {
 	if !common.CheckNil(name, nodeTemplate, permission) {
@@ -76,3 +75,4 @@ func GetNodeByID(id bson.ObjectId) (*Node, error) {
 func DeleteNode(id bson.ObjectId) error {
 	return common.Resources.Delete(nodeCollection, bson.M{"_id": id}, true)
 }
+*/

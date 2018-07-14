@@ -1,5 +1,9 @@
 package models
 
+/*
+
+
+
 import (
 	"errors"
 	"sporule/api/app/modules/common"
@@ -79,3 +83,4 @@ func GetNodeTemplatesByFields(fieldsID bson.ObjectId) (*[]NodeTemplate, error) {
 	//query := bson.M{}
 	return nil, nil
 }
+*/
