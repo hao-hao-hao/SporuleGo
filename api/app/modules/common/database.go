@@ -5,7 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Resource is the interface for dbs
+//Resource is the interface for dbs, but we are not using it for now
 type Resource interface {
 	Create(table string, item interface{}) error
 	Get(table string, object, query interface{}, extraQuery func(*mgo.Query) *mgo.Query) error
@@ -25,7 +25,7 @@ type MongoDB struct {
 }
 
 //Resources is the db
-var Resources Resource
+var Resources *MongoDB
 
 //NewMongoDB initiates the db session
 func NewMongoDB(host, database, username, password string, dropDB bool) (*MongoDB, error) {

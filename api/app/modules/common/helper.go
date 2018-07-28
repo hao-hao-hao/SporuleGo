@@ -2,6 +2,7 @@ package common
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"reflect"
 	"strconv"
@@ -16,6 +17,7 @@ func CheckNil(items ...interface{}) (result bool) {
 	result = true
 	for _, item := range items {
 		value := reflect.ValueOf(item)
+		fmt.Printf("%v , %v \n", value, value.Kind())
 		//return false if the value is not valid
 		if !value.IsValid() {
 			result = false
@@ -28,8 +30,8 @@ func CheckNil(items ...interface{}) (result bool) {
 			//recursive call itself to check the real value
 			valueElem := value.Elem()
 			result = CheckNil(valueElem)
-		case reflect.Struct:
-			//return true by default, struct is always not nil
+		case reflect.Struct, reflect.Int, reflect.Uint, reflect.Bool:
+			//always return true
 		default:
 			result = false
 		}

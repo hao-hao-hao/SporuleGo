@@ -8,10 +8,11 @@ import (
 
 //Configuration provides the configuration model
 type Configuration struct {
-	Host, Database, Username, Password string
-	DropDB                             bool `json:"DropDB,string"`
-	JWTKey, JWTIssuer, ENV             string
-	JWTLife                            time.Duration
+	Host, Database, Username, Password, BasicMember string
+	MaximumFailedLogin                              int
+	DropDB                                          bool `json:"DropDB,string"`
+	JWTKey, JWTIssuer, ENV                          string
+	JWTLife                                         time.Duration
 }
 
 //LoadConfiguration loads configuration from json file

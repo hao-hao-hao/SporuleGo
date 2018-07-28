@@ -7,5 +7,7 @@
     "Database":"sporule",
     "Username":"sporule",
     "Password":"1q2w3e4r",
-    "DropDB":"false"
+    "DropDB":"false",
+    "BasicMember":"Member",
+    "MaximumFailedLogin":5
 }

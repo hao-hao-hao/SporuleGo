@@ -17,8 +17,8 @@ type Field struct {
 	Name     string        `bson:"name"`
 	Type     string        `bson:"type"`
 	Preset   string        `bson:"preset"`
-	Created  time.Time     `bson:created`
-	Modified time.Time     `bson:modified`
+	Created  time.Time     `bson:"created"`
+	Modified time.Time     `bson:"modified"`
 }
 
 //NewField is the constructor for Field

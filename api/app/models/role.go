@@ -12,8 +12,8 @@ const roleCollection = "role"
 
 //Role is for permission management
 type Role struct {
-	ID   bson.ObjectId `bson:"_id,omitempty"`
-	Name string        `bson:"name"`
+	ID   bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
+	Name string        `bson:"name" json:"name,omitempty"`
 }
 
 //NewRole is the constructor for Role
@@ -43,19 +43,14 @@ func (role *Role) Insert() error {
 }
 
 //Update updates the role to the database
-func (role *Role) Update(id bson.ObjectId) error {
-	if !common.CheckNil(id) {
-		id = role.ID
-	} else {
-		role.ID = id
-	}
-	err := common.Resources.Update(roleCollection, bson.M{"_id": id}, role, false)
+func (role *Role) Update() error {
+	err := common.Resources.Update(roleCollection, common.MgoQry.Bson("_id", role.ID), role, false)
 	return err
 }
 
 //DeleteRoleByID deletes the selected role by Id
 func DeleteRoleByID(id bson.ObjectId) error {
-	return common.Resources.Delete(roleCollection, bson.M{"_id": id}, true)
+	return common.Resources.Delete(roleCollection, common.MgoQry.Bson("_id", id), true)
 }
 
 //GetRole returns a role according to the filter query
@@ -74,12 +69,12 @@ func GetRoles(query bson.M) (*[]Role, error) {
 
 //GetRoleByID returns field by id
 func GetRoleByID(id bson.ObjectId) (*Role, error) {
-	role, err := GetRole(bson.M{"_id": id})
+	role, err := GetRole(common.MgoQry.Bson("_id", id))
 	return role, err
 }
 
 //GetRoleByName returns field by id
 func GetRoleByName(name string) (*Role, error) {
-	role, err := GetRole(bson.M{"name": name})
+	role, err := GetRole(common.MgoQry.Bson("name", name))
 	return role, err
 }
