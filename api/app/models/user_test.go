@@ -8,6 +8,8 @@ import (
 
 	"github.com/bouk/monkey"
 	"github.com/smartystreets/goconvey/convey"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 func TestNewUser(t *testing.T) {
@@ -33,6 +35,15 @@ func TestRegister(t *testing.T) {
 	//patches
 	helper := &test.Helper{}
 	helper.PatchResouces()
+	helper.AddPatches(
+		monkey.Patch(GetUserByEmail, func(email string) (*User, error) {
+			if email == "abc@gmail.com" {
+				password, _ := common.EncryptPassword("1q2w3e4r")
+				return &User{Email: email, Password: password}, nil
+			}
+			return &User{}, errors.New(common.Enums.ErrorMessages.PageNotFound)
+		}),
+	)
 	defer helper.Unpatch()
 	convey.Convey("Testing Register", t, func() {
 		convey.Convey("email/password/id is nil: should return error", func() {
@@ -40,10 +51,58 @@ func TestRegister(t *testing.T) {
 			err := user.Register()
 			convey.So(err, convey.ShouldNotBeNil)
 		})
-		convey.Convey("email/password/id is not nil: should not reutrn error", func() {
-			user := &User{}
+		convey.Convey("email is already exist: should not reutrn error", func() {
+			user := &User{ID: "123", Email: "abc@gmail.com", Password: "1q2w3e4r"}
 			err := user.Register()
 			convey.So(err, convey.ShouldNotBeNil)
+		})
+		convey.Convey("email/password/id is not nil: should not reutrn error", func() {
+			user := &User{ID: "123", Email: "bbc@gmail.com", Password: "1q2w3e4r"}
+			err := user.Register()
+			convey.So(err, convey.ShouldBeNil)
+		})
+	})
+}
+
+func TestUserUpdate(t *testing.T) {
+	//patches
+	helper := &test.Helper{}
+	helper.PatchResouces()
+	helper.AddPatches(
+		//These patches is to simulate the condition of if user.IsExist() && user.Email != tempUser.Email
+		monkey.Patch(GetUserByEmail, func(email string) (*User, error) {
+			if email == "abc@gmail.com" || email == "bbc@gmail.com" {
+				password, _ := common.EncryptPassword("1q2w3e4r")
+				return &User{Email: email, Password: password}, nil
+			}
+			return &User{}, errors.New(common.Enums.ErrorMessages.PageNotFound)
+		}),
+		monkey.Patch(GetUserByID, func(id bson.ObjectId) (*User, error) {
+			return &User{Email: "bbc@gmail.com"}, nil
+
+		}),
+	)
+	defer helper.Unpatch()
+	convey.Convey("Testing User Update", t, func() {
+		convey.Convey("email/password/id is nil: should return error", func() {
+			user := &User{}
+			err := user.Update()
+			convey.So(err, convey.ShouldNotBeNil)
+		})
+		convey.Convey("email is already exist: should not reutrn error", func() {
+			user := &User{ID: "123", Email: "abc@gmail.com", Password: "1q2w3e4r"}
+			err := user.Update()
+			convey.So(err, convey.ShouldNotBeNil)
+		})
+		convey.Convey("updating user without email change, it should not reutrn error", func() {
+			user := &User{ID: "123", Email: "bbc@gmail.com", Password: "1q2w3e4r"}
+			err := user.Update()
+			convey.So(err, convey.ShouldBeNil)
+		})
+		convey.Convey("updating user with new email, it should not reutrn error", func() {
+			user := &User{ID: "123", Email: "bbcd@gmail.com", Password: "1q2w3e4r"}
+			err := user.Update()
+			convey.So(err, convey.ShouldBeNil)
 		})
 	})
 }

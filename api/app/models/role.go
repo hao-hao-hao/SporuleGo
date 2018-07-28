@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"sporule/api/app/modules/common"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -12,8 +13,10 @@ const roleCollection = "role"
 
 //Role is for permission management
 type Role struct {
-	ID   bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
-	Name string        `bson:"name" json:"name,omitempty"`
+	ID           bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
+	Name         string        `bson:"name" json:"name,omitempty"`
+	CreatedDate  time.Time     `bson:"createdDate,omitempty" json:"createdDate,omitempty"`
+	ModifiedDate time.Time     `bson:"modeifiedDate,omitempty" json:"modeifiedDate,omitempty"`
 }
 
 //NewRole is the constructor for Role
@@ -29,13 +32,15 @@ func NewRole(name string) (*Role, error) {
 
 //Insert inserts the role to the database
 func (role *Role) Insert() error {
-	if !common.CheckNil(role.Name) {
+	if !common.CheckNil(role.ID, role.Name) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
-	tempRole, _ := GetRoleByName(role.Name)
-	if common.CheckNil(tempRole.Name) {
+	tempRole, _ := GetRoleByID(role.ID)
+	if role.IsExist() && role.Name != tempRole.Name {
 		return errors.New(common.Enums.ErrorMessages.RecordExist)
 	}
+	role.CreatedDate = time.Now()
+	role.ModifiedDate = time.Now()
 	if common.Resources.Create(roleCollection, role) != nil {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
@@ -44,8 +49,26 @@ func (role *Role) Insert() error {
 
 //Update updates the role to the database
 func (role *Role) Update() error {
+	if !common.CheckNil(role.ID, role.Name) {
+		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
+	}
+	tempRole, _ := GetRoleByID(role.ID)
+	if role.IsExist() && role.Name != tempRole.Name {
+		//need to ensure the new role name is not exist in the db
+		return errors.New(common.Enums.ErrorMessages.RecordExist)
+	}
+	role.ModifiedDate = time.Now()
 	err := common.Resources.Update(roleCollection, common.MgoQry.Bson("_id", role.ID), role, false)
 	return err
+}
+
+//IsExist check to see if the role name is already exist in the database.
+func (role *Role) IsExist() bool {
+	tempRole, _ := GetRoleByName(role.Name)
+	if common.CheckNil(tempRole.Name) {
+		return true
+	}
+	return false
 }
 
 //DeleteRoleByID deletes the selected role by Id

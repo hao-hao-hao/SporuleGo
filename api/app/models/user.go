@@ -23,6 +23,8 @@ type User struct {
 	FailedLogin      int                    `bson:"failedLogin,omitempty" json:"failedLogin,omitempty"`
 	IsDisabled       bool                   `bson:"isDisabled,omitempty" json:"isDisabled,omitempty"`
 	CustomAttributes map[string]interface{} `bson:"customAttributes,omitempty" json:"customAttributes,omitempty"`
+	CreatedDate      time.Time              `bson:"createdDate,omitempty" json:"createdDate,omitempty"`
+	ModifiedDate     time.Time              `bson:"modeifiedDate,omitempty" json:"modeifiedDate,omitempty"`
 }
 
 //NewUser Constructor, It will create a new user object, and inject mongodb ID and hash password automatically
@@ -51,8 +53,7 @@ func (user *User) Register() error {
 	if !common.CheckNil(user.ID, user.Email, user.Password) {
 		return errors.New(common.Enums.ErrorMessages.LackOfRegInfo)
 	}
-	tempUser, _ := GetUserByEmail(user.Email)
-	if common.CheckNil(tempUser.Email) {
+	if user.IsExist() {
 		return errors.New(common.Enums.ErrorMessages.UserExist)
 	}
 	//get the default role
@@ -63,10 +64,38 @@ func (user *User) Register() error {
 	user.RoleIds = append(user.RoleIds, basicRole.ID)
 	//remove all User Roles as we only use RoleIDs in the database
 	user.Roles = nil
+	user.CreatedDate = time.Now()
+	user.ModifiedDate = time.Now()
 	if common.Resources.Create(userCollection, user) != nil {
 		return errors.New(common.Enums.ErrorMessages.SystemError)
 	}
 	return nil
+}
+
+//Update updates the user to the database
+func (user *User) Update() error {
+	if !common.CheckNil(user.ID, user.Email, user.Password) {
+		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
+	}
+	tempUser, _ := GetUserByID(user.ID)
+	if user.IsExist() && user.Email != tempUser.Email {
+		//need to ensure the new email is not exist in the db
+		return errors.New(common.Enums.ErrorMessages.UserExist)
+	}
+	//remove all User Roles as we only use RoleIDs in the database
+	user.Roles = nil
+	user.ModifiedDate = time.Now()
+	err := common.Resources.Update(userCollection, common.MgoQry.Bson("_id", user.ID), user, false)
+	return err
+}
+
+//IsExist check to see if the user email is already exist in the database.
+func (user *User) IsExist() bool {
+	tempUser, _ := GetUserByEmail(user.Email)
+	if common.CheckNil(tempUser.Email) {
+		return true
+	}
+	return false
 }
 
 //VerifyUser verifies the email and password, it also return the user object
@@ -86,7 +115,7 @@ func VerifyUser(email, password string) (*User, error) {
 			user.IsDisabled = true
 		}
 		//update user to the db
-		user.Update(user.ID)
+		user.Update()
 		return nil, errors.New(common.Enums.ErrorMessages.AuthFailed)
 	}
 	return user, nil
@@ -95,15 +124,7 @@ func VerifyUser(email, password string) (*User, error) {
 //UpdateTokenSalt updates the token salt of the user to invalid the user token
 func (user *User) UpdateTokenSalt() error {
 	user.TokenSalt = common.GenerateRandomString()
-	return user.Update(user.ID)
-}
-
-//Update updates the user to the database
-func (user *User) Update(id bson.ObjectId) error {
-	//remove all User Roles as we only use RoleIDs in the database
-	user.Roles = nil
-	err := common.Resources.Update(userCollection, bson.M{"_id": id}, user, false)
-	return err
+	return user.Update()
 }
 
 //ChangeDisableStatus will change user IsDisabled property from true to false or false to true
@@ -113,7 +134,7 @@ func (user *User) ChangeDisableStatus() error {
 	} else {
 		user.IsDisabled = true
 	}
-	return user.Update(user.ID)
+	return user.Update()
 }
 
 //GetUser returns a user according to the filter query

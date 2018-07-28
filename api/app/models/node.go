@@ -11,15 +11,17 @@ const nodeCollection = "node"
 
 //Node contains actual content for the website
 type Node struct {
-	ID             bson.ObjectId               `bson:"_id"`
-	Name           string                      `bson:"name"`
+	ID             bson.ObjectId               `bson:"_id,omitempty"`
+	Name           string                      `bson:"name,omitempty"`
 	NodeTemplateID bson.ObjectId               `bson:"nodeTemplateID"`
 	Content        map[Field]map[string]string `bson:"content"`
 	Permission     []Role                      `bson:"permission"`
 	ParentID       bson.ObjectId               `bson:"parentID"`
+	ParentNode     interface{}                 `bson:"parentNode"`
 	Owner          User                        `bson:"owner"`
-	CreatedDate    time.Time                   `bson:createdDate`
-	ModifiedDate   time.Time                   `bson:modeifiedDate`
+	CreatedDate    time.Time                   `bson:"createdDate,omitempty" json:"createdDate,omitempty"`
+	ModifiedDate   time.Time                   `bson:"modeifiedDate,omitempty" json:"modeifiedDate,omitempty"`
+	IsPublished    bool                        `bson:"isPublished,omitempty" json:"isPublished,omitempty"`
 }
 
 /*

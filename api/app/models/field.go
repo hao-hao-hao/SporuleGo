@@ -13,12 +13,12 @@ const fieldCollection = "field"
 
 //Field is for the purpose of front end rendering. Such as dropdown or textbox or input string etc....
 type Field struct {
-	ID       bson.ObjectId `bson:"_id"`
-	Name     string        `bson:"name"`
-	Type     string        `bson:"type"`
-	Preset   string        `bson:"preset"`
-	Created  time.Time     `bson:"created"`
-	Modified time.Time     `bson:"modified"`
+	ID           bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
+	Name         string        `bson:"name,omitempty" json:"name,omitempty"`
+	Type         string        `bson:"type,omitempty" json:"type,omitempty"`
+	Preset       string        `bson:"preset,omitempty" json:"preset,omitempty"`
+	CreatedDate  time.Time     `bson:"createdDate,omitempty" json:"createdDate,omitempty"`
+	ModifiedDate time.Time     `bson:"modeifiedDate,omitempty" json:"modeifiedDate,omitempty"`
 }
 
 //NewField is the constructor for Field
@@ -35,9 +35,14 @@ func NewField(name, fieldType string) (*Field, error) {
 
 //Insert inserts the field to the database
 func (field *Field) Insert() error {
-	if !common.CheckNil(field.Name, field.Type) {
+	if !common.CheckNil(field.ID, field.Name, field.Type) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
+	if field.IsExist() {
+		return errors.New(common.Enums.ErrorMessages.RecordExist)
+	}
+	field.CreatedDate = time.Now()
+	field.ModifiedDate = time.Now()
 	if common.Resources.Create(fieldCollection, field) != nil {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
@@ -45,19 +50,32 @@ func (field *Field) Insert() error {
 }
 
 //Update updates the Field to the database
-func (field *Field) Update(id bson.ObjectId) error {
-	if !common.CheckNil(id) {
-		id = field.ID
-	} else {
-		field.ID = id
+func (field *Field) Update() error {
+	if !common.CheckNil(field.ID, field.Name) {
+		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
-	err := common.Resources.Update(fieldCollection, bson.M{"_id": id}, field, false)
+	tempField, _ := GetFieldByID(field.ID)
+	if field.IsExist() && field.Name != tempField.Name {
+		//ensure the field name is not in the db
+		return errors.New(common.Enums.ErrorMessages.RecordExist)
+	}
+	field.ModifiedDate = time.Now()
+	err := common.Resources.Update(fieldCollection, common.MgoQry.Bson("_id", field.ID), field, false)
 	return err
+}
+
+//IsExist check to see if the field name is already exist in the database.
+func (field *Field) IsExist() bool {
+	tempField, _ := GetFieldByName(field.Name)
+	if common.CheckNil(tempField.Name) {
+		return true
+	}
+	return false
 }
 
 //DeleteField deletes the selected field by Id
 func DeleteField(id bson.ObjectId) error {
-	return common.Resources.Delete(fieldCollection, bson.M{"_id": id}, false)
+	return common.Resources.Delete(fieldCollection, common.MgoQry.Bson("_id", id), false)
 }
 
 //GetField returns a field according to the filter query
@@ -76,6 +94,15 @@ func GetFields(query bson.M) (*[]Field, error) {
 
 //GetFieldByID returns field by id
 func GetFieldByID(id bson.ObjectId) (*Field, error) {
-	field, err := GetField(bson.M{"_id": id})
-	return field, err
+	return GetField(common.MgoQry.Bson("_id", id))
+}
+
+//GetFieldByName returns field by name
+func GetFieldByName(name string) (*Field, error) {
+	return GetField(common.MgoQry.Bson("name", name))
+}
+
+//GetFieldsByType returns fields with the same type name
+func GetFieldsByType(typeName string) (*[]Field, error) {
+	return GetFields(common.MgoQry.Bson("type", typeName))
 }
