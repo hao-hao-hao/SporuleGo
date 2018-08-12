@@ -1,35 +1,42 @@
 package models
 
-/*
+import (
+	"sporule/api/app/modules/test"
+	"testing"
+
+	"github.com/smartystreets/goconvey/convey"
+)
+
 func TestNewNodeTemplate(t *testing.T) {
 	convey.Convey("Testing NewNodeTemplate", t, func() {
-		convey.Convey("Has Nil Values: Should return error without the result", func() {
-			monkey.Patch(common.CheckNil, func(_ ...interface{}) bool {
-				return false
-			})
-			result, err := NewNodeTemplate("", "", []Field{})
+		convey.Convey("Name is nil: Should return error without the result", func() {
+			result, err := NewNodeTemplate("", nil)
 			convey.So(result, convey.ShouldBeNil)
 			convey.So(err, convey.ShouldNotBeNil)
 		})
-		convey.Convey("Does not have Nil Values: Should return result without the error", func() {
-			monkey.Patch(common.CheckNil, func(_ ...interface{}) bool {
-				return true
-			})
-			result, err := NewNodeTemplate("", "", []Field{})
+		convey.Convey("Name is not nil: Should return result without the error", func() {
+			result, err := NewNodeTemplate("Shop", nil)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(result, convey.ShouldNotBeNil)
 		})
 	})
 }
 
-func TestGetNodeTemplatesByFields(t *testing.T) {
-	convey.Convey("Testing GetNodeTemplatesByFields", t, func() {
-		convey.Convey("Correct Field should return correct item", func() {
-			field, err := NewField("textbox", "TextArea")
-			err = field.Insert()
-			print(err)
-			convey.So("1", convey.ShouldEqual, "1")
+func TestNodeTemplateInsert(t *testing.T) {
+	//apply patches
+	helper := &test.Helper{}
+	helper.PatchResouces()
+	defer helper.Unpatch()
+	convey.Convey("Testing NodeTemplate.Insert", t, func() {
+		convey.Convey("Nil ID will result an error", func() {
+			nodeTemplate := &NodeTemplate{Name: "TemplateA"}
+			err := nodeTemplate.Insert()
+			convey.So(err, convey.ShouldNotBeNil)
+		})
+		convey.Convey("Node Template with ID and name will not return an error", func() {
+			nodeTemplate := &NodeTemplate{ID: "123", Name: "TemplateA"}
+			err := nodeTemplate.Insert()
+			convey.So(err, convey.ShouldBeNil)
 		})
 	})
 }
-*/

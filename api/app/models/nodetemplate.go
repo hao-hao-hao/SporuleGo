@@ -1,9 +1,5 @@
 package models
 
-/*
-
-
-
 import (
 	"errors"
 	"sporule/api/app/modules/common"
@@ -17,30 +13,38 @@ const nodeTemplateCollection = "nodeTemplate"
 
 //NodeTemplate is a template for creating nodes
 type NodeTemplate struct {
-	ID           bson.ObjectId    `bson:"_id"`
-	Name         string           `bson:"name"`
-	Fields       map[Field]string `bson:"fields"`
-	CreatedDate  time.Time        `bson:createdDate`
-	ModifiedDate time.Time        `bson:modeifiedDate`
+	ID           bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
+	Name         string        `bson:"name,omitempty" json:"name,omitempty"`
+	Content      []NodeContent `bson:"content,omitempty" json:"content,omitempty"`
+	CreatedDate  time.Time     `bson:"createdDate,omitempty" json:"createdDate,omitempty"`
+	ModifiedDate time.Time     `bson:"modeifiedDate,omitempty" json:"modeifiedDate,omitempty"`
+}
+
+//NodeContent is the actual content of the node
+type NodeContent struct {
+	Name, Value string
+	Type        Field
 }
 
 //NewNodeTemplate is the node template constructor
-func NewNodeTemplate(name string, fields []Field) (*NodeTemplate, error) {
-	if !common.CheckNil(name, fields) {
+func NewNodeTemplate(name string, content []NodeContent) (*NodeTemplate, error) {
+	if !common.CheckNil(name) {
 		return nil, errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
 	nodeTemplate := &NodeTemplate{}
 	nodeTemplate.ID = bson.NewObjectId()
 	nodeTemplate.Name = name
-	nodeTemplate.Fields = fields
+	nodeTemplate.Content = content
 	return nodeTemplate, nil
 }
 
 //Insert inserts the node template to the database
 func (nodeTemplate *NodeTemplate) Insert() error {
-	if !common.CheckNil(nodeTemplate.Name, nodeTemplate.Fields) {
+	if !common.CheckNil(nodeTemplate.Name, nodeTemplate.ID) {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
+	nodeTemplate.CreatedDate = time.Now()
+	nodeTemplate.ModifiedDate = time.Now()
 	if common.Resources.Create(nodeTemplateCollection, nodeTemplate) != nil {
 		return errors.New(common.Enums.ErrorMessages.LackOfInfo)
 	}
@@ -83,4 +87,3 @@ func GetNodeTemplatesByFields(fieldsID bson.ObjectId) (*[]NodeTemplate, error) {
 	//query := bson.M{}
 	return nil, nil
 }
-*/

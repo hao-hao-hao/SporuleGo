@@ -176,7 +176,7 @@ func GetUsersByRole(roleName string) (*[]User, error) {
 	return GetUsers(common.MgoQry.Bson("roles.name", roleName))
 }
 
-//GetUsersGeneral returns user by using aggregate queries
+//GetUsersGeneral returns users by using some filters
 func GetUsersGeneral(ID bson.ObjectId, email string, roleName string) (*[]User, error) {
 	filters := []bson.M{}
 	//Apply filters if the filter value is not nil

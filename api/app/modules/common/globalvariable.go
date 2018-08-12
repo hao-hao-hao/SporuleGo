@@ -53,6 +53,8 @@ func (enums *enum) loadFieldEnums() {
 	enums.FieldTypes.Dropdown = "Dropdown"
 	enums.FieldTypes.TextArea = "TextArea"
 	enums.FieldTypes.TextBox = "TextBox"
+	enums.FieldTypes.Label = "Label"
+	enums.FieldTypes.DatePicker = "DatePicker"
 }
 
 //Structs
@@ -93,7 +95,7 @@ type other struct {
 
 //Field is a type for field
 type fieldType struct {
-	Dropdown, TextBox, TextArea string
+	Dropdown, TextBox, TextArea, Label, DatePicker string
 }
 
 //*Normal Global Variables*//
